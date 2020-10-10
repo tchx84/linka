@@ -1,6 +1,6 @@
 # rald-server
 
-Red de Aire Libre Descenstralizada
+Red de Aire Libre Descentralizada
 
 ## Install
 

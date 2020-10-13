@@ -13,6 +13,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
+from typing import List, Optional
 from pydantic import BaseModel
 
 
@@ -23,3 +25,14 @@ class Measurement(BaseModel):
     light: float
     noise: float
     quality: float
+
+
+class Query(BaseModel):
+
+    start: Optional[datetime] = None
+    end: Optional[datetime] = None
+
+
+class QueryResult(BaseModel):
+
+    measurements: List[Measurement] = []

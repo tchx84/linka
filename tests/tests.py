@@ -36,3 +36,13 @@ def test_record():
 
     response = client.post('/api/v1/record', json=measurements)
     assert response.status_code == 200
+
+
+def test_query():
+    query = {
+        'start': '2020-12-01T00:00:00',
+        'end': '2020-12-02T00:00:00',
+    }
+
+    response = client.get('/api/v1/query', json=query)
+    assert response.status_code == 200

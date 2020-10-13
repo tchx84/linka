@@ -16,7 +16,7 @@
 from fastapi import FastAPI
 from typing import List
 
-from .models import Measurement
+from .models import Measurement, Query, QueryResult
 
 app = FastAPI()
 
@@ -24,3 +24,8 @@ app = FastAPI()
 @app.post('/api/v1/record')
 async def record(measurements: List[Measurement]):
     pass
+
+
+@app.get('/api/v1/query')
+async def query(query: Query):
+    return QueryResult()

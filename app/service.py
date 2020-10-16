@@ -17,7 +17,7 @@ from fastapi import FastAPI, Depends
 from typing import List
 
 from .vault import Vault
-from .models import Measurement, QueryParams
+from .schemas import Measurement, QueryParams
 
 app = FastAPI()
 vault = Vault().setup()

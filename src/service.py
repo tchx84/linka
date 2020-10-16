@@ -13,19 +13,27 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+
 from typing import List
 
+
 from .models import Measurement, Query, QueryResult
+
+from .authentication import get_current_username
 
 app = FastAPI()
 
 
+
+
+
 @app.post('/api/v1/record')
-async def record(measurements: List[Measurement]):
+async def record(measurements: List[Measurement], username: str = Depends(get_current_username)):
     pass
 
 
 @app.get('/api/v1/query')
-async def query(query: Query):
+async def query(query: Query, username: str = Depends(get_current_username)):
     return QueryResult()

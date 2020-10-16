@@ -13,19 +13,31 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from typing import List
 
-from .models import Measurement, Query, QueryResult
+from .vault import Vault
+from .models import Measurement, QueryParams
 
 app = FastAPI()
+vault = Vault().setup()
+
+
+@app.on_event("startup")
+async def startup():
+    await vault.startup()
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    await vault.shutdown()
 
 
 @app.post('/api/v1/record')
-async def record(measurements: List[Measurement]):
-    pass
+async def record(measurement: Measurement):
+    await vault.store(measurement.dict())
 
 
-@app.get('/api/v1/query')
-async def query(query: Query):
-    return QueryResult()
+@app.get('/api/v1/query', response_model=List[Measurement])
+async def query(query: QueryParams = Depends(QueryParams)):
+    return [Measurement.from_orm(m) for m in await vault.retrieve(query)]

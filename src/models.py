@@ -13,26 +13,31 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from datetime import datetime
-from typing import List, Optional
-from pydantic import BaseModel
+from datetime import datetime, timezone
+from pydantic import BaseModel, Field
+from pydantic.dataclasses import dataclass
+from fastapi import Query
 
 
 class Measurement(BaseModel):
 
-    temperature: float
-    humidity: float
-    light: float
-    noise: float
-    quality: float
+    sensor: str
+    source: str
+    pm1dot0: float
+    pm2dot5: float
+    pm10: float
+    longitude: float
+    latitude: float
+    recorded: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc))
+
+    class Config:
+        orm_mode = True
 
 
-class Query(BaseModel):
+@dataclass
+class QueryParams:
 
-    start: Optional[datetime] = None
-    end: Optional[datetime] = None
-
-
-class QueryResult(BaseModel):
-
-    measurements: List[Measurement] = []
+    source: str = Query(None)
+    start: datetime = Query(None)
+    end: datetime = Query(None)

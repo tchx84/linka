@@ -13,36 +13,63 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 import sys
 
+from datetime import datetime
+from urllib.parse import urlencode
 from fastapi.testclient import TestClient
 
 sys.path.insert(1, 'src')  # noqa E402
-from src import service
 
-client = TestClient(service.app)
+client = None
+test_db_path = 'test.db'
+measurement = {
+    'sensor': 'test',
+    'source': 'test',
+    'pm1dot0': 0.0,
+    'pm2dot5': 0.0,
+    'pm10': 0.0,
+    'longitude': 0.0,
+    'latitude': 0.0,
+    'recorded': datetime.utcnow().isoformat(),
+}
+
+
+def setup_module():
+    global client
+
+    if os.path.exists(test_db_path):
+        os.unlink(test_db_path)
+    os.environ['RALD_DB_URL'] = f'sqlite:///./{test_db_path}'
+
+    from src import service
+    client = TestClient(service.app)
+
+
+def teardown_module():
+    if os.path.exists(test_db_path):
+        os.unlink(test_db_path)
 
 
 def test_record():
-    measurements = [
-        {
-            'temperature': 0,
-            'humidity': 0,
-            'light': 0,
-            'noise': 0,
-            'quality': 0,
-        }
-    ]
-
-    response = client.post('/api/v1/record', json=measurements)
+    response = client.post('/api/v1/record', json=measurement)
     assert response.status_code == 200
 
 
 def test_query():
+    response = client.get('/api/v1/query')
+    assert response.status_code == 200
+    assert response.json() == [measurement]
+
+
+def test_empty_query():
     query = {
-        'start': '2020-12-01T00:00:00',
-        'end': '2020-12-02T00:00:00',
+        'source': 'test',
+        'start': '1984-04-24T00:00:00',
+        'end': '1984-04-25T00:00:00',
     }
 
-    response = client.get('/api/v1/query', json=query)
+    response = client.get(f'/api/v1/query?{urlencode(query)}')
     assert response.status_code == 200
+    assert response.json() == []

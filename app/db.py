@@ -13,34 +13,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from fastapi import FastAPI, Depends
-from typing import List
+import os
+import sqlalchemy
 
-from . import models
-from . import schemas
-from .db import db
-
-app = FastAPI()
+from databases import Database
 
 
-@app.on_event("startup")
-async def startup():
-    await db.connect()
-
-
-@app.on_event("shutdown")
-async def shutdown():
-    await db.disconnect()
-
-
-@app.post('/api/v1/record')
-async def record(measurement: schemas.Measurement):
-    await models.Measurement.store(db, measurement.dict())
-
-
-@app.get('/api/v1/query', response_model=List[schemas.Measurement])
-async def query(query: schemas.QueryParams = Depends(schemas.QueryParams)):
-    return [
-        schemas.Measurement.from_orm(m)
-        for m in await models.Measurement.retrieve(db, query)
-    ]
+db = Database(os.environ.get('DATABASE_URL', 'sqlite:///./default.db'))
+metadata = sqlalchemy.MetaData()

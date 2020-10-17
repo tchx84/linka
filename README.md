@@ -11,6 +11,13 @@ $ source ./env/bin/activate
 $ pip install -r requirements.txt
 ```
 
+## Setup
+
+```
+$ export DATABASE_URL=sqlite:///./default.db
+$ alembic upgrade head
+```
+
 ## Run
 
 ```

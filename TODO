@@ -1,4 +1,0 @@
-[ ] persist measurements
-[ ] basic authentication
-[ ] query endpoint
-[ ] basic CI for running qa.sh on new PRs

@@ -31,8 +31,8 @@ measurement = {
     'pm1dot0': 0.0,
     'pm2dot5': 0.0,
     'pm10': 0.0,
-    'longitude': 0.0,
-    'latitude': 0.0,
+    'longitude': -25.194156,
+    'latitude': -57.521369,
     'recorded': datetime.utcnow().isoformat(),
 }
 
@@ -77,3 +77,15 @@ def test_empty_query():
     response = client.get(f'/api/v1/query?{urlencode(query)}')
     assert response.status_code == 200
     assert response.json() == []
+
+
+def test_distance_query():
+    query = {
+        'longitude': -25.194156,
+        'latitude': -57.521369,
+        'distance': '100',
+    }
+
+    response = client.get(f'/api/v1/query?{urlencode(query)}')
+    assert response.status_code == 200
+    assert response.json() == [measurement]

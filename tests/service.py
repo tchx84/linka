@@ -25,6 +25,8 @@ sys.path.append(ROOT_DIR)
 
 client = None
 test_db_path = 'test.db'
+sources_path = os.path.join(ROOT_DIR, 'data', 'sources.json.example')
+headers = {'X-API-Key': 'bGlua2E6bGlua2E='}
 measurement = {
     'sensor': 'test',
     'source': 'test',
@@ -35,10 +37,6 @@ measurement = {
     'latitude': -57.521369,
     'recorded': datetime.utcnow().isoformat(),
 }
-
-sources_path = os.path.join(ROOT_DIR, 'data', 'sources.json.example')
-
-headers = {"X-API-Key": "bGlua2E6bGlua2E="}
 
 
 def setup_module():
@@ -63,14 +61,12 @@ def teardown_module():
 
 
 def test_record():
-    response = client.post('/api/v1/record', json=measurement,
-                           headers=headers)
+    response = client.post('/api/v1/record', json=measurement, headers=headers)
     assert response.status_code == 200
 
 
 def test_query():
     response = client.get('/api/v1/query')
-
     assert response.status_code == 200
     assert response.json() == [measurement]
 
@@ -83,7 +79,6 @@ def test_empty_query():
     }
 
     response = client.get(f'/api/v1/query?{urlencode(query)}')
-
     assert response.status_code == 200
     assert response.json() == []
 

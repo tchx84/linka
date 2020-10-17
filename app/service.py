@@ -15,12 +15,13 @@
 
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security.api_key import APIKey
 from typing import List
 
 from . import models
 from . import schemas
 from .db import db
-from .authentication import get_current_source
+from .authentication import get_current_key
 
 
 app = FastAPI()
@@ -44,7 +45,7 @@ async def shutdown():
 
 @app.post('/api/v1/record')
 async def record(measurement: schemas.Measurement,
-                 source: dict = Depends(get_current_source)):
+                 key: APIKey = Depends(get_current_key)):
     await models.Measurement.store(db, measurement.dict())
 
 

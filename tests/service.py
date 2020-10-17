@@ -36,6 +36,10 @@ measurement = {
     'recorded': datetime.utcnow().isoformat(),
 }
 
+sources_path = os.path.join(ROOT_DIR, 'data', 'sources.json.example')
+
+headers = {"X-API-Key": "bGlua2E6bGlua2E="}
+
 
 def setup_module():
     global client
@@ -43,6 +47,8 @@ def setup_module():
     if os.path.exists(test_db_path):
         os.unlink(test_db_path)
     os.environ['DATABASE_URL'] = f'sqlite:///./{test_db_path}'
+
+    os.environ['SOURCES_PATH'] = f'{sources_path}'
 
     from alembic import config
     config.main(argv=['upgrade', 'head'])
@@ -57,12 +63,14 @@ def teardown_module():
 
 
 def test_record():
-    response = client.post('/api/v1/record', json=measurement)
+    response = client.post('/api/v1/record', json=measurement,
+                           headers=headers)
     assert response.status_code == 200
 
 
 def test_query():
     response = client.get('/api/v1/query')
+
     assert response.status_code == 200
     assert response.json() == [measurement]
 
@@ -75,6 +83,7 @@ def test_empty_query():
     }
 
     response = client.get(f'/api/v1/query?{urlencode(query)}')
+
     assert response.status_code == 200
     assert response.json() == []
 

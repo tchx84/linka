@@ -20,6 +20,8 @@ from typing import List
 from . import models
 from . import schemas
 from .db import db
+from .authentication import get_current_source
+
 
 app = FastAPI()
 app.add_middleware(
@@ -41,7 +43,8 @@ async def shutdown():
 
 
 @app.post('/api/v1/record')
-async def record(measurement: schemas.Measurement):
+async def record(measurement: schemas.Measurement,
+                 source: dict = Depends(get_current_source)):
     await models.Measurement.store(db, measurement.dict())
 
 

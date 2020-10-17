@@ -26,4 +26,4 @@ $ gunicorn --bind 0.0.0.0:5000 --graceful-timeout 300 --timeout 300 --worker-cla
 
 ## Docs
 
-Visit http://localhost:5000/docs
+Check http://localhost:5000/docs

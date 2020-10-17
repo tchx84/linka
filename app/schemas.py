@@ -16,6 +16,7 @@
 from datetime import datetime, timezone
 from pydantic import BaseModel, Field
 from pydantic.dataclasses import dataclass
+from typing import Optional
 from fastapi import Query
 
 
@@ -23,9 +24,9 @@ class Measurement(BaseModel):
 
     sensor: str
     source: str
-    pm1dot0: float
-    pm2dot5: float
-    pm10: float
+    pm1dot0: Optional[float] = None
+    pm2dot5: Optional[float] = None
+    pm10: Optional[float] = None
     longitude: float
     latitude: float
     recorded: datetime = Field(

@@ -20,7 +20,8 @@ from datetime import datetime
 from urllib.parse import urlencode
 from fastapi.testclient import TestClient
 
-sys.path.insert(1, 'src')  # noqa E402
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(ROOT_DIR)
 
 client = None
 test_db_path = 'test.db'
@@ -41,7 +42,10 @@ def setup_module():
 
     if os.path.exists(test_db_path):
         os.unlink(test_db_path)
-    os.environ['RALD_DB_URL'] = f'sqlite:///./{test_db_path}'
+    os.environ['DATABASE_URL'] = f'sqlite:///./{test_db_path}'
+
+    from alembic import config
+    config.main(argv=['upgrade', 'head'])
 
     from app import service
     client = TestClient(service.app)

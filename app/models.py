@@ -13,6 +13,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import geopy
+import geopy.distance
 import sqlalchemy
 
 from .db import metadata
@@ -50,5 +52,20 @@ class Measurement:
             select = select.where(measurements.c.recorded <= query.end)
         if query.source is not None:
             select = select.where(measurements.c.source == query.source)
+        if query.distance is not None:
+            longitude = query.longitude if query.longitude is not None else 0.0
+            latitude = query.latitude if query.latitude is not None else 0.0
+            location = geopy.Point(latitude, longitude)
+            distance = geopy.distance.distance(kilometers=query.distance)
+
+            north = distance.destination(point=location, bearing=0)
+            east = distance.destination(point=location, bearing=90)
+            south = distance.destination(point=location, bearing=180)
+            west = distance.destination(point=location, bearing=270)
+
+            select = select.where(measurements.c.latitude <= north.latitude)
+            select = select.where(measurements.c.longitude <= east.longitude)
+            select = select.where(measurements.c.latitude >= south.latitude)
+            select = select.where(measurements.c.longitude >= west.longitude)
 
         return await db.fetch_all(select)

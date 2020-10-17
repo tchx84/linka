@@ -42,3 +42,6 @@ class QueryParams:
     source: str = Query(None)
     start: datetime = Query(None)
     end: datetime = Query(None)
+    longitude: float = Query(None)
+    latitude: float = Query(None)
+    distance: float = Query(None)

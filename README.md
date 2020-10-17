@@ -14,6 +14,7 @@ $ pip install -r requirements.txt
 ## Setup
 
 ```
+$ export SOURCES_PATH=./data/sources.json.example
 $ export DATABASE_URL=sqlite:///./default.db
 $ alembic upgrade head
 ```

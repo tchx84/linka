@@ -25,6 +25,8 @@ sys.path.append(ROOT_DIR)
 
 client = None
 test_db_path = 'test.db'
+sources_path = os.path.join(ROOT_DIR, 'data', 'sources.json.example')
+headers = {'X-API-Key': 'bGlua2E6bGlua2E='}
 measurement = {
     'sensor': 'test',
     'source': 'test',
@@ -44,6 +46,8 @@ def setup_module():
         os.unlink(test_db_path)
     os.environ['DATABASE_URL'] = f'sqlite:///./{test_db_path}'
 
+    os.environ['SOURCES_PATH'] = f'{sources_path}'
+
     from alembic import config
     config.main(argv=['upgrade', 'head'])
 
@@ -57,7 +61,7 @@ def teardown_module():
 
 
 def test_record():
-    response = client.post('/api/v1/record', json=measurement)
+    response = client.post('/api/v1/record', json=measurement, headers=headers)
     assert response.status_code == 200
 
 

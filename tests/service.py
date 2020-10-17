@@ -43,7 +43,7 @@ def setup_module():
         os.unlink(test_db_path)
     os.environ['RALD_DB_URL'] = f'sqlite:///./{test_db_path}'
 
-    from src import service
+    from app import service
     client = TestClient(service.app)
 
 

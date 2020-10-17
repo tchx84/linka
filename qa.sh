@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-python3 -m pytest -s tests/tests.py
+python3 -m pytest -s tests/service.py
 
-pycodestyle src/*.py tests/*.py
-pyflakes src/*.py tests/*.py
+pycodestyle app/*.py tests/*.py
+pyflakes app/*.py tests/*.py

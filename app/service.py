@@ -21,7 +21,7 @@ from typing import List
 from . import models
 from . import schemas
 from .db import db
-from .authentication import get_current_key
+from .authentication import validate_api_key
 
 
 app = FastAPI()
@@ -45,7 +45,7 @@ async def shutdown():
 
 @app.post('/api/v1/measurements')
 async def post(measurements: List[schemas.Measurement],
-               key: APIKey = Depends(get_current_key)):
+               key: APIKey = Depends(validate_api_key)):
     await models.Measurement.store(db, [m.dict() for m in measurements])
 
 

@@ -17,6 +17,9 @@ import geopy
 import geopy.distance
 import sqlalchemy
 
+from databases.core import Database
+from typing import Dict, Set
+
 from .db import metadata
 
 
@@ -32,6 +35,14 @@ measurements = sqlalchemy.Table(
     sqlalchemy.Column('pm10', sqlalchemy.Float, nullable=True),
     sqlalchemy.Column('longitude', sqlalchemy.Float),
     sqlalchemy.Column('latitude', sqlalchemy.Float),
+)
+
+api_keys = sqlalchemy.Table(
+    'api_keys',
+    metadata,
+    sqlalchemy.Column('application', sqlalchemy.String, primary_key=True),
+    sqlalchemy.Column('prefix', sqlalchemy.String(length=7), primary_key=True),
+    sqlalchemy.Column('api_key_hash', sqlalchemy.String(length=65)),
 )
 
 
@@ -69,3 +80,29 @@ class Measurement:
             select = select.where(measurements.c.longitude >= west.longitude)
 
         return await db.fetch_all(select)
+
+
+class APIKey:
+
+    @staticmethod
+    async def store(db: Database, api_key: Dict) -> None:
+        insert = api_keys.insert()
+        await db.execute(insert, api_key)
+
+    @staticmethod
+    async def get_all_keys(db: Database) -> Set[str]:
+        query = sqlalchemy.select([api_keys.c.prefix, api_keys.c.api_key_hash])
+        keys = await db.fetch_all(query)
+        return {k[0] + "." + k[1] for k in keys}
+
+    @staticmethod
+    async def get_apps(db: Database) -> Set[str]:
+        query = sqlalchemy.select([api_keys.c.application, api_keys.c.prefix])
+        return await db.fetch_all(query)
+
+    @staticmethod
+    async def delete(db: Database, api_key: Dict):
+        delete = api_keys.delete()
+        query = delete.where(api_keys.c.application == api_key["application"])
+        query = query.where(api_keys.c.prefix == api_key["prefix"])
+        await db.execute(query)

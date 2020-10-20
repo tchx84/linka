@@ -27,16 +27,18 @@ client = None
 test_db_path = 'test.db'
 sources_path = os.path.join(ROOT_DIR, 'data', 'sources.json.example')
 headers = {'X-API-Key': 'bGlua2E6bGlua2E='}
-measurement = {
-    'sensor': 'test',
-    'source': 'test',
-    'pm1dot0': 0.0,
-    'pm2dot5': 0.0,
-    'pm10': 0.0,
-    'longitude': -25.194156,
-    'latitude': -57.521369,
-    'recorded': datetime.utcnow().isoformat(),
-}
+measurements = [
+    {
+        'sensor': 'test',
+        'source': 'test',
+        'pm1dot0': 0.0,
+        'pm2dot5': 0.0,
+        'pm10': 0.0,
+        'longitude': -25.194156,
+        'latitude': -57.521369,
+        'recorded': datetime.utcnow().isoformat(),
+    },
+]
 
 
 def setup_module():
@@ -61,14 +63,17 @@ def teardown_module():
 
 
 def test_record():
-    response = client.post('/api/v1/record', json=measurement, headers=headers)
+    response = client.post(
+        '/api/v1/measurements',
+        json=measurements,
+        headers=headers)
     assert response.status_code == 200
 
 
 def test_query():
-    response = client.get('/api/v1/query')
+    response = client.get('/api/v1/measurements')
     assert response.status_code == 200
-    assert response.json() == [measurement]
+    assert response.json() == measurements
 
 
 def test_empty_query():
@@ -78,7 +83,7 @@ def test_empty_query():
         'end': '1984-04-25T00:00:00',
     }
 
-    response = client.get(f'/api/v1/query?{urlencode(query)}')
+    response = client.get(f'/api/v1/measurements?{urlencode(query)}')
     assert response.status_code == 200
     assert response.json() == []
 
@@ -90,6 +95,6 @@ def test_distance_query():
         'distance': '100',
     }
 
-    response = client.get(f'/api/v1/query?{urlencode(query)}')
+    response = client.get(f'/api/v1/measurements?{urlencode(query)}')
     assert response.status_code == 200
-    assert response.json() == [measurement]
+    assert response.json() == measurements

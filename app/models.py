@@ -38,9 +38,9 @@ measurements = sqlalchemy.Table(
 class Measurement:
 
     @staticmethod
-    async def store(db, measurement):
+    async def store(db, measurements_):
         insert = measurements.insert()
-        await db.execute(insert, measurement)
+        await db.execute_many(insert, measurements_)
 
     @staticmethod
     async def retrieve(db, query):

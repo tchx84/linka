@@ -16,7 +16,7 @@ $ pip install -r requirements.txt
 ```
 $ export DATABASE_URL=sqlite:///./default.db
 $ alembic upgrade head
-$ ./rald-cli api-keys create app
+$ ./rald-cli api-keys create linka
 Your new API key is: f710b83cee5f43d2b73cbec810dc842c (use the new generated API key)
 ```
 

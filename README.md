@@ -14,9 +14,10 @@ $ pip install -r requirements.txt
 ## Setup
 
 ```
-$ export SOURCES_PATH=./data/sources.json.example
 $ export DATABASE_URL=sqlite:///./default.db
 $ alembic upgrade head
+$ ./rald-cli api-keys create app
+Your new API key is: f710b83cee5f43d2b73cbec810dc842c (use the new generated API key)
 ```
 
 ## Run
@@ -42,7 +43,6 @@ When running, you can set the following environment variables:
 | TIMEOUT            | 300                         |
 | WORKER_CONNECTIONS | 10                          |
 | WORKERS            | 3                           |
-| SOURCES_PATH       | ./data/sources.json.example |
 | DATABASE_URL       | sqlite:///./default.db      |
 
 ## Docs

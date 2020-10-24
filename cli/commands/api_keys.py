@@ -1,13 +1,11 @@
 import click
-import uuid
-import hashlib
 
-from app.db import db
-from app.schemas import APIKey
-from app import models
-
-from cli.decorators import coro
+from typing import Optional
 from tabulate import tabulate
+
+from app import models
+from app.db import db
+from cli.decorators import coro
 
 
 @click.group()
@@ -16,40 +14,53 @@ def api_keys() -> None:
     pass
 
 
-@api_keys.command(name="list")
+@api_keys.command(name='list')
 @coro
 async def list_() -> None:
-    """ List current applications registered with an API Key """
-    apps = await models.APIKey.get_apps(db)
+    """ List current sources registered with an API Key """
+    sources = await models.APIKey.get_sources(db)
     click.echo(
-            tabulate(
-                apps,
-                headers=["Application", "Prefix"],
-                tablefmt="grid",
-            )
+        tabulate(
+            sources,
+            headers=['Source', 'Number of registered API Keys'],
         )
+    )
 
 
 @api_keys.command()
-@click.argument('application')
+@click.argument('source')
 @coro
-async def create(application: str) -> None:
+async def create(source: str) -> None:
     """Create a new API Key"""
-    prefix = uuid.uuid4().hex[:7]
-    raw_api_key = uuid.uuid4().hex
-    api_key_hash = hashlib.sha256(raw_api_key.encode('utf-8')).hexdigest()
-
-    api_key = APIKey(application=application, prefix=prefix, api_key_hash=api_key_hash)
-    await models.APIKey.store(db, api_key.dict())
-    click.echo(f"Your new API key is: {prefix}.{raw_api_key}")
+    api_key = await models.APIKey.create_new_key(db, source)
+    click.echo(f"Your new API key is: {api_key}")
 
 
 @api_keys.command()
-@click.argument('application')
-@click.argument('prefix')
+@click.argument('source')
+@click.option('--key', help='API Key to be removed')
+@click.option(
+    '--all',
+    'all_',
+    is_flag=True,
+    default=False,
+    help='Remove all keys for the provided source',
+)
 @coro
-async def revoke(application: str, prefix: str) -> None:
-    """Revoke an API Key for a specific prefix/application"""
-    api_key = APIKey(application=application, prefix=prefix)
-    await models.APIKey.delete(db, api_key.dict())
-    click.echo("Done. API Key revoked.")
+async def revoke(source: str, key: Optional[str], all_: Optional[bool]) -> None:
+    """Revoke one or all API Key(s) for a specific source"""
+    if not any([key, all_]):
+        raise click.UsageError("--key or --all must be provided")
+    if all([key, all_]):
+        raise click.UsageError("Provide either --key or --all but not both.")
+
+    if key:
+        if await models.APIKey.revoke_key(db, source, key):
+            click.echo("API Key revoked.")
+        else:
+            click.echo("Couldn't remove the provide API Key.")
+    if all_:
+        if await models.APIKey.revoke_all_keys(db, source):
+            click.echo(f"All API keys for '{source}'' have been revoked.")
+        else:
+            click.echo(f"Couldn't remove the API keys for {source}.")

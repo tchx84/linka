@@ -29,18 +29,11 @@ InvalidAPIKey = HTTPException(
 )
 
 
-async def validate_api_key(api_key: APIKey = Security(query)):
-    if not api_key:
+async def validate_api_key(raw_api_key: APIKey = Security(query)):
+    if not raw_api_key:
         raise InvalidAPIKey
 
-    try:
-        prefix, raw_api_key = api_key.split(".")
-    except ValueError:
-        raise InvalidAPIKey
-
-    api_key_hash = hashlib.sha256(raw_api_key.encode('utf-8')).hexdigest()
-    key = f"{prefix}.{api_key_hash}"
-
-    api_keys = await models.APIKey.get_all_keys(db)
-    if key not in api_keys:
+    key = hashlib.sha256(raw_api_key.encode('utf-8')).hexdigest()
+    keys = await models.APIKey.get_all_keys(db)
+    if key not in keys:
         raise InvalidAPIKey

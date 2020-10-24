@@ -1,7 +1,6 @@
-import click
 import asyncio
 
-from functools import wraps, partial
+from functools import wraps
 
 
 def coro(f):

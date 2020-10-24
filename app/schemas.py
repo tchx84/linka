@@ -45,13 +45,3 @@ class QueryParams:
     longitude: float = Query(None)
     latitude: float = Query(None)
     distance: float = Query(None)
-
-
-class APIKey(BaseModel):
-
-    application: str
-    prefix: str
-    api_key_hash: Optional[str] = None
-
-    class Config:
-        orm_mode = True

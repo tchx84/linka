@@ -16,9 +16,11 @@
 import geopy
 import geopy.distance
 import sqlalchemy
+import uuid
+import hashlib
 
 from databases.core import Database
-from typing import Dict, Set
+from typing import Dict, List, Set, Tuple
 
 from .db import metadata
 
@@ -40,14 +42,15 @@ measurements = sqlalchemy.Table(
 api_keys = sqlalchemy.Table(
     'api_keys',
     metadata,
-    sqlalchemy.Column('application', sqlalchemy.String, primary_key=True),
-    sqlalchemy.Column('prefix', sqlalchemy.String(length=7), primary_key=True),
-    sqlalchemy.Column('api_key_hash', sqlalchemy.String(length=65)),
+    sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True),
+    sqlalchemy.Column('source', sqlalchemy.String, nullable=False),
+    sqlalchemy.Column(
+        'api_key_hash', sqlalchemy.String(length=65), nullable=False
+    ),
 )
 
 
 class Measurement:
-
     @staticmethod
     async def store(db, measurements_):
         insert = measurements.insert()
@@ -83,26 +86,42 @@ class Measurement:
 
 
 class APIKey:
-
     @staticmethod
     async def store(db: Database, api_key: Dict) -> None:
         insert = api_keys.insert()
         await db.execute(insert, api_key)
 
     @staticmethod
-    async def get_all_keys(db: Database) -> Set[str]:
-        query = sqlalchemy.select([api_keys.c.prefix, api_keys.c.api_key_hash])
-        keys = await db.fetch_all(query)
-        return {k[0] + "." + k[1] for k in keys}
+    async def create_new_key(db: Database, source: str) -> str:
+        raw_api_key = uuid.uuid4().hex
+        api_key_hash = hashlib.sha256(raw_api_key.encode('utf-8')).hexdigest()
+        api_key = {'source': source, 'api_key_hash': api_key_hash}
+        await APIKey.store(db, api_key)
+        return raw_api_key
 
     @staticmethod
-    async def get_apps(db: Database) -> Set[str]:
-        query = sqlalchemy.select([api_keys.c.application, api_keys.c.prefix])
+    async def get_sources(db: Database) -> List[Tuple[str, int]]:
+        query = sqlalchemy.select(
+            [api_keys.c.source, sqlalchemy.func.count(api_keys.c.source)]
+        ).group_by(api_keys.c.source)
         return await db.fetch_all(query)
 
     @staticmethod
-    async def delete(db: Database, api_key: Dict):
+    async def revoke_key(db: Database, source: str, raw_api_key: str) -> bool:
+        api_key_hash = hashlib.sha256(raw_api_key.encode('utf-8')).hexdigest()
         delete = api_keys.delete()
-        query = delete.where(api_keys.c.application == api_key["application"])
-        query = query.where(api_keys.c.prefix == api_key["prefix"])
-        await db.execute(query)
+        query = delete.where(api_keys.c.source == source)
+        query = query.where(api_keys.c.api_key_hash == api_key_hash)
+        return await db.execute(query)
+
+    @staticmethod
+    async def revoke_all_keys(db: Database, source: str) -> bool:
+        delete = api_keys.delete()
+        query = delete.where(api_keys.c.source == source)
+        return await db.execute(query)
+
+    @staticmethod
+    async def get_all_keys(db: Database) -> Set[str]:
+        query = sqlalchemy.select([api_keys.c.api_key_hash])
+        keys = await db.fetch_all(query)
+        return {k[0] for k in keys}

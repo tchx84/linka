@@ -22,7 +22,6 @@ ENV     CONTAINER_PORT=5000 \
         TIMEOUT=300 \
         WORKER_CONNECTIONS=10 \
         WORKERS=3 \
-        SOURCES_PATH=./data/sources.json.example \
         DATABASE_URL=sqlite:///./default.db
 
 EXPOSE ${CONTAINER_PORT}

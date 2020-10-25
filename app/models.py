@@ -1,4 +1,5 @@
-# Copyright 2020 Linka González
+# Copyright 2020 Martín Abente Lahaye
+# Copyright 2020 Samuel Cantero
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by

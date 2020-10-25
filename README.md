@@ -1,6 +1,6 @@
-# rald-server
+# LINKA
 
-Red de Aire Libre Descentralizada
+LINKA is an open source backend service to record air quality data from sensors.
 
 ## Install
 

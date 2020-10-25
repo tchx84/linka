@@ -16,7 +16,7 @@ $ pip install -r requirements.txt
 ```
 $ export DATABASE_URL=sqlite:///./default.db
 $ alembic upgrade head
-$ ./rald-cli api-keys create linka
+$ ./linka-cli api-keys create tchx84
 Your new API key is: f710b83cee5f43d2b73cbec810dc842c (use the new generated API key)
 ```
 
@@ -29,8 +29,8 @@ $ gunicorn --bind 0.0.0.0:5000 --graceful-timeout 300 --timeout 300 --worker-cla
 ## Docker
 
 ```
-# docker build -t rald-server .
-# docker run -d -p 5000:5000 --name rald-server rald-server
+# docker build -t linka .
+# docker run -d -p 5000:5000 --name linka linka
 ```
 
 When running, you can set the following environment variables:
@@ -49,13 +49,13 @@ When running, you can set the following environment variables:
 Create, list and revoke the API keys for a specific source.
 
 ### create
-`$ rald-cli api-keys create SOURCE`
+`$ linka-cli api-keys create SOURCE`
 
 ### list
-`$ rald-cli api-keys list`
+`$ linka-cli api-keys list`
 
 ### revoke
-`$ rald-cli api-keys revoke SOURCE [--all] [--key]`
+`$ linka-cli api-keys revoke SOURCE [--all] [--key]`
 
 Either provide `--all` for revoking all the keys associated to a source or `--key` to revoke a single key.
 

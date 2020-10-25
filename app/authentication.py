@@ -1,4 +1,4 @@
-# Copyright 2020 Julio Reyes
+# Copyright 2020 Julio Rey
 # Copyright 2020 Martín Abente Lahaye
 # Copyright 2020 Samuel Cantero
 #

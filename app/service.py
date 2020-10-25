@@ -21,7 +21,7 @@ from typing import List
 from . import models
 from . import schemas
 from .db import db
-from .authentication import get_current_key
+from .authentication import validate_api_key
 
 
 app = FastAPI()
@@ -43,14 +43,14 @@ async def shutdown():
     await db.disconnect()
 
 
-@app.post('/api/v1/record')
-async def record(measurement: schemas.Measurement,
-                 key: APIKey = Depends(get_current_key)):
-    await models.Measurement.store(db, measurement.dict())
+@app.post('/api/v1/measurements')
+async def post(measurements: List[schemas.Measurement],
+               key: APIKey = Depends(validate_api_key)):
+    await models.Measurement.store(db, [m.dict() for m in measurements])
 
 
-@app.get('/api/v1/query', response_model=List[schemas.Measurement])
-async def query(query: schemas.QueryParams = Depends(schemas.QueryParams)):
+@app.get('/api/v1/measurements', response_model=List[schemas.Measurement])
+async def get(query: schemas.QueryParams = Depends(schemas.QueryParams)):
     return [
         schemas.Measurement.from_orm(m)
         for m in await models.Measurement.retrieve(db, query)

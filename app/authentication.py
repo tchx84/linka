@@ -13,39 +13,27 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
-import json
+import hashlib
 
 from fastapi import HTTPException, Security, status
 from fastapi.security.api_key import APIKeyHeader, APIKey
 
-ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+from .db import db
+from . import models
 
-keys = None
+
 query = APIKeyHeader(name='X-API-Key', auto_error=False)
+InvalidAPIKey = HTTPException(
+    status_code=status.HTTP_403_FORBIDDEN,
+    detail="Could not validate credentials"
+)
 
 
-def get_all_keys():
-    global keys
+async def validate_api_key(raw_api_key: APIKey = Security(query)):
+    if not raw_api_key:
+        raise InvalidAPIKey
 
-    if keys is not None:
-        return keys
-
-    sources_path = os.environ.get(
-        'SOURCES_PATH', os.path.join(ROOT_DIR, 'data', 'sources.json.example'))
-    with open(sources_path) as sources_json:
-        keys = json.load(sources_json).get('keys', {})
-
-    return keys
-
-
-def get_current_key(key: APIKey = Security(query)):
-    source = get_all_keys().get(key)
-
-    if source is None:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Could not validate credentials"
-        )
-
-    return source
+    key = hashlib.sha256(raw_api_key.encode('utf-8')).hexdigest()
+    keys = await models.APIKey.get_all_keys(db)
+    if key not in keys:
+        raise InvalidAPIKey

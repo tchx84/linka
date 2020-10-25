@@ -15,28 +15,32 @@
 
 import os
 import sys
+import asyncio
 
 from datetime import datetime
 from urllib.parse import urlencode
+from alembic import config
 from fastapi.testclient import TestClient
+
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(ROOT_DIR)
 
 client = None
 test_db_path = 'test.db'
-sources_path = os.path.join(ROOT_DIR, 'data', 'sources.json.example')
-headers = {'X-API-Key': 'bGlua2E6bGlua2E='}
-measurement = {
-    'sensor': 'test',
-    'source': 'test',
-    'pm1dot0': 0.0,
-    'pm2dot5': 0.0,
-    'pm10': 0.0,
-    'longitude': -25.194156,
-    'latitude': -57.521369,
-    'recorded': datetime.utcnow().isoformat(),
-}
+headers = {'X-API-Key': ''}
+measurements = [
+    {
+        'sensor': 'test',
+        'source': 'test',
+        'pm1dot0': 0.0,
+        'pm2dot5': 0.0,
+        'pm10': 0.0,
+        'longitude': -25.194156,
+        'latitude': -57.521369,
+        'recorded': datetime.utcnow().isoformat(),
+    },
+]
 
 
 def setup_module():
@@ -44,13 +48,15 @@ def setup_module():
 
     if os.path.exists(test_db_path):
         os.unlink(test_db_path)
+
     os.environ['DATABASE_URL'] = f'sqlite:///./{test_db_path}'
-
-    os.environ['SOURCES_PATH'] = f'{sources_path}'
-
-    from alembic import config
     config.main(argv=['upgrade', 'head'])
 
+    from app.db import db
+    from app import models
+    headers['X-API-Key'] = asyncio.run(
+        models.APIKey.create_new_key(db, 'test')
+    )
     from app import service
     client = TestClient(service.app)
 
@@ -61,14 +67,23 @@ def teardown_module():
 
 
 def test_record():
-    response = client.post('/api/v1/record', json=measurement, headers=headers)
+    response = client.post(
+        '/api/v1/measurements', json=measurements, headers=headers
+    )
     assert response.status_code == 200
+
+
+def test_invalid_api_key_access():
+    response = client.post(
+        '/api/v1/measurements', json=measurements, headers={'X-API-Key': '123'}
+    )
+    assert response.status_code == 403
 
 
 def test_query():
-    response = client.get('/api/v1/query')
+    response = client.get('/api/v1/measurements')
     assert response.status_code == 200
-    assert response.json() == [measurement]
+    assert response.json() == measurements
 
 
 def test_empty_query():
@@ -78,7 +93,7 @@ def test_empty_query():
         'end': '1984-04-25T00:00:00',
     }
 
-    response = client.get(f'/api/v1/query?{urlencode(query)}')
+    response = client.get(f'/api/v1/measurements?{urlencode(query)}')
     assert response.status_code == 200
     assert response.json() == []
 
@@ -90,6 +105,6 @@ def test_distance_query():
         'distance': '100',
     }
 
-    response = client.get(f'/api/v1/query?{urlencode(query)}')
+    response = client.get(f'/api/v1/measurements?{urlencode(query)}')
     assert response.status_code == 200
-    assert response.json() == [measurement]
+    assert response.json() == measurements

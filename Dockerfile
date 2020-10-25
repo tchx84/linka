@@ -1,7 +1,7 @@
 FROM python:3.8-alpine AS base
 
 # Maintainer
-LABEL maintainer="Linka González <linkag@protonmail.ch>"
+LABEL maintainer="Pablo Santa Cruz <pablo@roshka.com.py>"
 
 # We need gcc to build some python libraries
 RUN apk add build-base

@@ -1,4 +1,4 @@
-# Copyright 2020 Linka González
+# Copyright 2020 Martín Abente Lahaye
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from datetime import datetime, timezone
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 from pydantic.dataclasses import dataclass
 from typing import Optional
 from fastapi import Query
@@ -31,6 +31,13 @@ class Measurement(BaseModel):
     latitude: float
     recorded: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc))
+
+    @validator('recorded')
+    def must_be_utc(cls, v):
+        v = v if v.tzinfo else v.replace(tzinfo=timezone.utc)
+        v = datetime.utcfromtimestamp(v.timestamp())
+        v = v.replace(tzinfo=timezone.utc)
+        return v
 
     class Config:
         orm_mode = True

@@ -1,4 +1,4 @@
-# Copyright 2020 Linka González
+# Copyright 2020 Martín Abente Lahaye
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -16,8 +16,8 @@
 import os
 import sys
 import asyncio
+import copy
 
-from datetime import datetime
 from urllib.parse import urlencode
 from alembic import config
 from fastapi.testclient import TestClient
@@ -38,7 +38,7 @@ measurements = [
         'pm10': 0.0,
         'longitude': -25.194156,
         'latitude': -57.521369,
-        'recorded': datetime.utcnow().isoformat(),
+        'recorded': '2020-10-24T20:47:57.370721+00:00',
     },
 ]
 
@@ -108,3 +108,27 @@ def test_distance_query():
     response = client.get(f'/api/v1/measurements?{urlencode(query)}')
     assert response.status_code == 200
     assert response.json() == measurements
+
+
+def test_enforce_utc():
+    original = measurements[0]
+
+    future = copy.deepcopy(original)
+    future['recorded'] = '2020-10-24T21:47:57.370721+01:00'
+
+    present = copy.deepcopy(original)
+    present['recorded'] = '2020-10-24T20:47:57.370721'
+
+    past = copy.deepcopy(original)
+    past['recorded'] = '2020-10-24T19:47:57.370721-01:00'
+
+    from app.schemas import Measurement
+
+    original = Measurement(**original)
+    future = Measurement(**future)
+    present = Measurement(**present)
+    past = Measurement(**past)
+
+    assert original == future
+    assert original == present
+    assert original == past

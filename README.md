@@ -1,6 +1,6 @@
 # LINKA ![CI](https://github.com/tchx84/linka/workflows/CI/badge.svg)
 
-LINKA is an open source backend service to record air quality data from sensors.
+LINKA is an open source service to record air quality data from community sensors.
 
 ## Install
 
@@ -26,11 +26,15 @@ Your new API key is: f710b83cee5f43d2b73cbec810dc842c (use the new generated API
 $ gunicorn --bind 0.0.0.0:5000 --graceful-timeout 300 --timeout 300 --worker-class=uvicorn.workers.UvicornWorker --worker-connections=10 --workers=3 wsgi-service:app
 ```
 
+## Docs
+
+Run the service and check http://localhost:5000/docs
+
 ## Docker
 
 ```
-# docker build -t linka .
-# docker run -d -p 5000:5000 --name linka linka
+$ docker build -t linka .
+$ docker run -d -p 5000:5000 --name linka linka
 ```
 
 When running, you can set the following environment variables:
@@ -58,10 +62,6 @@ Create, list and revoke the API keys for a specific source.
 `$ linka-cli api-keys revoke SOURCE [--all] [--key]`
 
 Either provide `--all` for revoking all the keys associated to a source or `--key` to revoke a single key.
-
-## Docs
-
-Check http://localhost:5000/docs
 
 # Disclaimer
 

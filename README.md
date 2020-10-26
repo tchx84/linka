@@ -1,4 +1,4 @@
-# LINKA
+# LINKA ![CI](https://github.com/tchx84/linka/workflows/CI/badge.svg)
 
 LINKA is an open source backend service to record air quality data from sensors.
 

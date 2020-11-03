@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pydantic import BaseModel, Field, validator
 from pydantic.dataclasses import dataclass
 from typing import Optional
@@ -52,3 +52,8 @@ class QueryParams:
     longitude: float = Query(None)
     latitude: float = Query(None)
     distance: float = Query(None)
+
+    @validator('start')
+    def only_recent(cls, v):
+        v = v if v else datetime.now(timezone.utc) - timedelta(minutes=5)
+        return v

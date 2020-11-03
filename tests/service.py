@@ -36,8 +36,8 @@ measurements = [
         'pm1dot0': 0.0,
         'pm2dot5': 0.0,
         'pm10': 0.0,
-        'longitude': -25.194156,
-        'latitude': -57.521369,
+        'longitude': -57.521369,
+        'latitude': -25.194156,
         'recorded': '2020-10-24T20:47:57.370721+00:00',
     },
 ]
@@ -81,7 +81,11 @@ def test_invalid_api_key_access():
 
 
 def test_query():
-    response = client.get('/api/v1/measurements')
+    query = {
+        'start': '1984-04-24T00:00:00',
+    }
+
+    response = client.get(f'/api/v1/measurements?{urlencode(query)}')
     assert response.status_code == 200
     assert response.json() == measurements
 
@@ -100,8 +104,9 @@ def test_empty_query():
 
 def test_distance_query():
     query = {
-        'longitude': -25.194156,
-        'latitude': -57.521369,
+        'start': '1984-04-24T00:00:00',
+        'longitude': -57.521369,
+        'latitude': -25.194156,
         'distance': '100',
     }
 

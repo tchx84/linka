@@ -42,6 +42,12 @@ measurements = [
     },
 ]
 
+MASTER_KEY = 'EaDEFOuNiscENyok'
+master_headers = {'X-API-Key': MASTER_KEY}
+source = {
+    'source': 'test'
+}
+
 
 def setup_module():
     global client
@@ -49,7 +55,7 @@ def setup_module():
     if os.path.exists(test_db_path):
         os.unlink(test_db_path)
 
-    os.environ['LINKA_MASTER_KEY'] = 'EaDEFOuNiscENyok'
+    os.environ['LINKA_MASTER_KEY'] = MASTER_KEY
     os.environ['DATABASE_URL'] = f'sqlite:///./{test_db_path}'
     config.main(argv=['upgrade', 'head'])
 
@@ -140,14 +146,33 @@ def test_enforce_utc():
     assert original == past
 
 
-def test_adding_source():
-    headers = {'X-API-Key': os.environ.get('LINKA_MASTER_KEY')}
-    source = {
-        'name': 'test'
-    }
-
+def test_create_source():
     response = client.post(
-        '/api/v1/sources', json=source, headers=headers
+        '/api/v1/sources', json=source, headers=master_headers
     )
 
     assert response.status_code == 200
+
+
+def test_list_sources():
+    response = client.get(
+        '/api/v1/sources', headers=master_headers
+    )
+
+    assert response.status_code == 200
+    assert response.json() == [source]
+
+
+def test_delete_source():
+    response = client.delete(
+        '/api/v1/sources/test', headers=master_headers
+    )
+
+    assert response.status_code == 200
+
+    response = client.get(
+        '/api/v1/sources', headers=master_headers
+    )
+
+    assert response.status_code == 200
+    assert response.json() == []

@@ -46,8 +46,22 @@ async def shutdown():
 @app.post('/api/v1/sources', response_model=schemas.APIKey)
 async def create_source(source: schemas.Source,
                         key: APIKey = Depends(validate_master_key)):
-    key = await models.APIKey.create_new_key(db, source.name)
+    key = await models.APIKey.create_new_key(db, source.source)
     return schemas.APIKey(key=key)
+
+
+@app.get('/api/v1/sources')
+async def list_sources(key: APIKey = Depends(validate_master_key)):
+    return [
+        schemas.Source.from_orm(s)
+        for s in await models.APIKey.get_sources(db)
+    ]
+
+
+@app.delete('/api/v1/sources/{source}')
+async def delete_source(source: str,
+                        key: APIKey = Depends(validate_master_key)):
+    return await models.APIKey.revoke_all_keys(db, source)
 
 
 @app.post('/api/v1/measurements')

@@ -14,6 +14,7 @@ $ pip install -r requirements.txt
 ## Setup
 
 ```
+$ export LINKA_MASTER_KEY=""
 $ export DATABASE_URL=sqlite:///./default.db
 $ alembic upgrade head
 $ ./linka-cli api-keys create tchx84
@@ -48,6 +49,7 @@ When running, you can set the following environment variables:
 | WORKER_CONNECTIONS | 10                          |
 | WORKERS            | 3                           |
 | DATABASE_URL       | sqlite:///./default.db      |
+| LINKA_MASTER_KEY   | ""                          |
 
 ## API Keys Management
 Create, list and revoke the API keys for a specific source.

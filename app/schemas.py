@@ -57,3 +57,13 @@ class QueryParams:
     def only_recent(cls, v):
         v = v if v else datetime.now(timezone.utc) - timedelta(minutes=5)
         return v
+
+
+class Source(BaseModel):
+
+    name: str
+
+
+class APIKey(BaseModel):
+
+    key: str

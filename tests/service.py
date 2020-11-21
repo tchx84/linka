@@ -49,6 +49,7 @@ def setup_module():
     if os.path.exists(test_db_path):
         os.unlink(test_db_path)
 
+    os.environ['LINKA_MASTER_KEY'] = 'EaDEFOuNiscENyok'
     os.environ['DATABASE_URL'] = f'sqlite:///./{test_db_path}'
     config.main(argv=['upgrade', 'head'])
 
@@ -137,3 +138,16 @@ def test_enforce_utc():
     assert original == future
     assert original == present
     assert original == past
+
+
+def test_adding_source():
+    headers = {'X-API-Key': os.environ.get('LINKA_MASTER_KEY')}
+    source = {
+        'name': 'test'
+    }
+
+    response = client.post(
+        '/api/v1/sources', json=source, headers=headers
+    )
+
+    assert response.status_code == 200

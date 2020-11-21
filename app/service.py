@@ -21,7 +21,7 @@ from typing import List
 from . import models
 from . import schemas
 from .db import db
-from .authentication import validate_api_key
+from .authentication import validate_api_key, validate_master_key
 
 
 app = FastAPI()
@@ -41,6 +41,13 @@ async def startup():
 @app.on_event("shutdown")
 async def shutdown():
     await db.disconnect()
+
+
+@app.post('/api/v1/sources', response_model=schemas.APIKey)
+async def create_source(source: schemas.Source,
+                        key: APIKey = Depends(validate_master_key)):
+    key = await models.APIKey.create_new_key(db, source.name)
+    return schemas.APIKey(key=key)
 
 
 @app.post('/api/v1/measurements')

@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 import hashlib
 
 from fastapi import HTTPException, Security, status
@@ -38,4 +39,12 @@ async def validate_api_key(raw_api_key: APIKey = Security(query)):
     key = hashlib.sha256(raw_api_key.encode('utf-8')).hexdigest()
     keys = await models.APIKey.get_all_keys(db)
     if key not in keys:
+        raise InvalidAPIKey
+
+
+async def validate_master_key(raw_api_key: APIKey = Security(query)):
+    if not raw_api_key:
+        raise InvalidAPIKey
+
+    if raw_api_key != os.environ.get('LINKA_MASTER_KEY'):
         raise InvalidAPIKey

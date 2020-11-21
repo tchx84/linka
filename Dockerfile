@@ -23,6 +23,7 @@ ENV     CONTAINER_PORT=5000 \
         WORKER_CONNECTIONS=10 \
         WORKERS=3 \
         DATABASE_URL=sqlite:///./default.db
+        LINKA_MASTER_KEY=""
 
 EXPOSE ${CONTAINER_PORT}
 

@@ -61,7 +61,10 @@ class QueryParams:
 
 class Source(BaseModel):
 
-    name: str
+    source: str
+
+    class Config:
+        orm_mode = True
 
 
 class APIKey(BaseModel):

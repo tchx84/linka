@@ -27,27 +27,25 @@ from .db import metadata
 
 
 measurements = sqlalchemy.Table(
-    'measurements',
+    "measurements",
     metadata,
-    sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True),
-    sqlalchemy.Column('recorded', sqlalchemy.DateTime),
-    sqlalchemy.Column('sensor', sqlalchemy.String),
-    sqlalchemy.Column('source', sqlalchemy.String),
-    sqlalchemy.Column('pm1dot0', sqlalchemy.Float, nullable=True),
-    sqlalchemy.Column('pm2dot5', sqlalchemy.Float, nullable=True),
-    sqlalchemy.Column('pm10', sqlalchemy.Float, nullable=True),
-    sqlalchemy.Column('longitude', sqlalchemy.Float),
-    sqlalchemy.Column('latitude', sqlalchemy.Float),
+    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
+    sqlalchemy.Column("recorded", sqlalchemy.DateTime),
+    sqlalchemy.Column("sensor", sqlalchemy.String),
+    sqlalchemy.Column("source", sqlalchemy.String),
+    sqlalchemy.Column("pm1dot0", sqlalchemy.Float, nullable=True),
+    sqlalchemy.Column("pm2dot5", sqlalchemy.Float, nullable=True),
+    sqlalchemy.Column("pm10", sqlalchemy.Float, nullable=True),
+    sqlalchemy.Column("longitude", sqlalchemy.Float),
+    sqlalchemy.Column("latitude", sqlalchemy.Float),
 )
 
 api_keys = sqlalchemy.Table(
-    'api_keys',
+    "api_keys",
     metadata,
-    sqlalchemy.Column('id', sqlalchemy.Integer, primary_key=True),
-    sqlalchemy.Column('source', sqlalchemy.String, nullable=False),
-    sqlalchemy.Column(
-        'api_key_hash', sqlalchemy.String(length=65), nullable=False
-    ),
+    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
+    sqlalchemy.Column("source", sqlalchemy.String, nullable=False),
+    sqlalchemy.Column("api_key_hash", sqlalchemy.String(length=65), nullable=False),
 )
 
 
@@ -95,8 +93,8 @@ class APIKey:
     @staticmethod
     async def create_new_key(db: Database, source: str) -> str:
         raw_api_key = uuid.uuid4().hex
-        api_key_hash = hashlib.sha256(raw_api_key.encode('utf-8')).hexdigest()
-        api_key = {'source': source, 'api_key_hash': api_key_hash}
+        api_key_hash = hashlib.sha256(raw_api_key.encode("utf-8")).hexdigest()
+        api_key = {"source": source, "api_key_hash": api_key_hash}
         await APIKey.store(db, api_key)
         return raw_api_key
 
@@ -109,7 +107,7 @@ class APIKey:
 
     @staticmethod
     async def revoke_key(db: Database, source: str, raw_api_key: str) -> bool:
-        api_key_hash = hashlib.sha256(raw_api_key.encode('utf-8')).hexdigest()
+        api_key_hash = hashlib.sha256(raw_api_key.encode("utf-8")).hexdigest()
         delete = api_keys.delete()
         query = delete.where(api_keys.c.source == source)
         query = query.where(api_keys.c.api_key_hash == api_key_hash)

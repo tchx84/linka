@@ -25,10 +25,9 @@ from .db import db
 from . import models
 
 
-query = APIKeyHeader(name='X-API-Key', auto_error=False)
+query = APIKeyHeader(name="X-API-Key", auto_error=False)
 InvalidAPIKey = HTTPException(
-    status_code=status.HTTP_403_FORBIDDEN,
-    detail="Could not validate credentials"
+    status_code=status.HTTP_403_FORBIDDEN, detail="Could not validate credentials"
 )
 
 
@@ -36,7 +35,7 @@ async def validate_api_key(raw_api_key: APIKey = Security(query)):
     if not raw_api_key:
         raise InvalidAPIKey
 
-    key = hashlib.sha256(raw_api_key.encode('utf-8')).hexdigest()
+    key = hashlib.sha256(raw_api_key.encode("utf-8")).hexdigest()
     keys = await models.APIKey.get_all_keys(db)
     if key not in keys:
         raise InvalidAPIKey
@@ -46,5 +45,5 @@ async def validate_master_key(raw_api_key: APIKey = Security(query)):
     if not raw_api_key:
         raise InvalidAPIKey
 
-    if raw_api_key != os.environ.get('LINKA_MASTER_KEY'):
+    if raw_api_key != os.environ.get("LINKA_MASTER_KEY"):
         raise InvalidAPIKey

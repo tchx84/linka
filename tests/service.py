@@ -27,26 +27,24 @@ ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(ROOT_DIR)
 
 client = None
-test_db_path = 'test.db'
-headers = {'X-API-Key': ''}
+test_db_path = "test.db"
+headers = {"X-API-Key": ""}
 measurements = [
     {
-        'sensor': 'test',
-        'source': 'test',
-        'pm1dot0': 0.0,
-        'pm2dot5': 0.0,
-        'pm10': 0.0,
-        'longitude': -57.521369,
-        'latitude': -25.194156,
-        'recorded': '2020-10-24T20:47:57.370721+00:00',
+        "sensor": "test",
+        "source": "test",
+        "pm1dot0": 0.0,
+        "pm2dot5": 0.0,
+        "pm10": 0.0,
+        "longitude": -57.521369,
+        "latitude": -25.194156,
+        "recorded": "2020-10-24T20:47:57.370721+00:00",
     },
 ]
 
-MASTER_KEY = 'EaDEFOuNiscENyok'
-master_headers = {'X-API-Key': MASTER_KEY}
-source = {
-    'source': 'test'
-}
+MASTER_KEY = "EaDEFOuNiscENyok"
+master_headers = {"X-API-Key": MASTER_KEY}
+source = {"source": "test"}
 
 
 def setup_module():
@@ -55,16 +53,16 @@ def setup_module():
     if os.path.exists(test_db_path):
         os.unlink(test_db_path)
 
-    os.environ['LINKA_MASTER_KEY'] = MASTER_KEY
-    os.environ['DATABASE_URL'] = f'sqlite:///./{test_db_path}'
-    config.main(argv=['upgrade', 'head'])
+    os.environ["LINKA_MASTER_KEY"] = MASTER_KEY
+    os.environ["DATABASE_URL"] = f"sqlite:///./{test_db_path}"
+    config.main(argv=["upgrade", "head"])
 
     from app.db import db
     from app import models
-    headers['X-API-Key'] = asyncio.run(
-        models.APIKey.create_new_key(db, 'test')
-    )
+
+    headers["X-API-Key"] = asyncio.run(models.APIKey.create_new_key(db, "test"))
     from app import service
+
     client = TestClient(service.app)
 
 
@@ -74,50 +72,48 @@ def teardown_module():
 
 
 def test_record():
-    response = client.post(
-        '/api/v1/measurements', json=measurements, headers=headers
-    )
+    response = client.post("/api/v1/measurements", json=measurements, headers=headers)
     assert response.status_code == 200
 
 
 def test_invalid_api_key_access():
     response = client.post(
-        '/api/v1/measurements', json=measurements, headers={'X-API-Key': '123'}
+        "/api/v1/measurements", json=measurements, headers={"X-API-Key": "123"}
     )
     assert response.status_code == 403
 
 
 def test_query():
     query = {
-        'start': '1984-04-24T00:00:00',
+        "start": "1984-04-24T00:00:00",
     }
 
-    response = client.get(f'/api/v1/measurements?{urlencode(query)}')
+    response = client.get(f"/api/v1/measurements?{urlencode(query)}")
     assert response.status_code == 200
     assert response.json() == measurements
 
 
 def test_empty_query():
     query = {
-        'source': 'test',
-        'start': '1984-04-24T00:00:00',
-        'end': '1984-04-25T00:00:00',
+        "source": "test",
+        "start": "1984-04-24T00:00:00",
+        "end": "1984-04-25T00:00:00",
     }
 
-    response = client.get(f'/api/v1/measurements?{urlencode(query)}')
+    response = client.get(f"/api/v1/measurements?{urlencode(query)}")
     assert response.status_code == 200
     assert response.json() == []
 
 
 def test_distance_query():
     query = {
-        'start': '1984-04-24T00:00:00',
-        'longitude': -57.521369,
-        'latitude': -25.194156,
-        'distance': '100',
+        "start": "1984-04-24T00:00:00",
+        "longitude": -57.521369,
+        "latitude": -25.194156,
+        "distance": "100",
     }
 
-    response = client.get(f'/api/v1/measurements?{urlencode(query)}')
+    response = client.get(f"/api/v1/measurements?{urlencode(query)}")
     assert response.status_code == 200
     assert response.json() == measurements
 
@@ -126,13 +122,13 @@ def test_enforce_utc():
     original = measurements[0]
 
     future = copy.deepcopy(original)
-    future['recorded'] = '2020-10-24T21:47:57.370721+01:00'
+    future["recorded"] = "2020-10-24T21:47:57.370721+01:00"
 
     present = copy.deepcopy(original)
-    present['recorded'] = '2020-10-24T20:47:57.370721'
+    present["recorded"] = "2020-10-24T20:47:57.370721"
 
     past = copy.deepcopy(original)
-    past['recorded'] = '2020-10-24T19:47:57.370721-01:00'
+    past["recorded"] = "2020-10-24T19:47:57.370721-01:00"
 
     from app.schemas import Measurement
 
@@ -147,32 +143,24 @@ def test_enforce_utc():
 
 
 def test_create_source():
-    response = client.post(
-        '/api/v1/sources', json=source, headers=master_headers
-    )
+    response = client.post("/api/v1/sources", json=source, headers=master_headers)
 
     assert response.status_code == 200
 
 
 def test_list_sources():
-    response = client.get(
-        '/api/v1/sources', headers=master_headers
-    )
+    response = client.get("/api/v1/sources", headers=master_headers)
 
     assert response.status_code == 200
     assert response.json() == [source]
 
 
 def test_delete_source():
-    response = client.delete(
-        '/api/v1/sources/test', headers=master_headers
-    )
+    response = client.delete("/api/v1/sources/test", headers=master_headers)
 
     assert response.status_code == 200
 
-    response = client.get(
-        '/api/v1/sources', headers=master_headers
-    )
+    response = client.get("/api/v1/sources", headers=master_headers)
 
     assert response.status_code == 200
     assert response.json() == []

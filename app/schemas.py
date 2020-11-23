@@ -29,10 +29,9 @@ class Measurement(BaseModel):
     pm10: Optional[float] = None
     longitude: float
     latitude: float
-    recorded: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc))
+    recorded: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
-    @validator('recorded')
+    @validator("recorded")
     def must_be_utc(cls, v):
         v = v if v.tzinfo else v.replace(tzinfo=timezone.utc)
         v = datetime.utcfromtimestamp(v.timestamp())
@@ -53,7 +52,7 @@ class QueryParams:
     latitude: float = Query(None)
     distance: float = Query(None)
 
-    @validator('start')
+    @validator("start")
     def only_recent(cls, v):
         v = v if v else datetime.now(timezone.utc) - timedelta(minutes=5)
         return v

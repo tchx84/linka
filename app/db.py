@@ -19,5 +19,5 @@ import sqlalchemy
 from databases import Database
 
 
-db = Database(os.environ.get('DATABASE_URL', 'sqlite:///./default.db'))
+db = Database(os.environ.get("DATABASE_URL", "sqlite:///./default.db"))
 metadata = sqlalchemy.MetaData()

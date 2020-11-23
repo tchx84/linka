@@ -14,7 +14,7 @@ def api_keys() -> None:
     pass
 
 
-@api_keys.command(name='list')
+@api_keys.command(name="list")
 @coro
 async def list_() -> None:
     """ List current sources registered with an API Key """
@@ -22,13 +22,13 @@ async def list_() -> None:
     click.echo(
         tabulate(
             sources,
-            headers=['Source', 'Number of registered API Keys'],
+            headers=["Source", "Number of registered API Keys"],
         )
     )
 
 
 @api_keys.command()
-@click.argument('source')
+@click.argument("source")
 @coro
 async def create(source: str) -> None:
     """Create a new API Key"""
@@ -37,14 +37,14 @@ async def create(source: str) -> None:
 
 
 @api_keys.command()
-@click.argument('source')
-@click.option('--key', help='API Key to be removed')
+@click.argument("source")
+@click.option("--key", help="API Key to be removed")
 @click.option(
-    '--all',
-    'all_',
+    "--all",
+    "all_",
     is_flag=True,
     default=False,
-    help='Remove all keys for the provided source',
+    help="Remove all keys for the provided source",
 )
 @coro
 async def revoke(source: str, key: Optional[str], all_: Optional[bool]) -> None:

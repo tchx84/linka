@@ -22,14 +22,46 @@ from fastapi import Query
 
 class Measurement(BaseModel):
 
-    sensor: str
-    source: str
-    pm1dot0: Optional[float] = None
-    pm2dot5: Optional[float] = None
-    pm10: Optional[float] = None
-    longitude: float
-    latitude: float
-    recorded: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    sensor: str = Field(
+        ...,
+        title="Sensor",
+        description="Model of the sensor device",
+    )
+    source: str = Field(
+        ...,
+        title="Source",
+        description="Name used to identify the device",
+    )
+    pm1dot0: Optional[float] = Field(
+        None,
+        title="PM1.0",
+        description="Concentration of PM1.0 inhalable particles per ug/m3",
+    )
+    pm2dot5: Optional[float] = Field(
+        None,
+        title="PM2.5",
+        description="Concentration of PM2.5 inhalable particles per ug/m3",
+    )
+    pm10: Optional[float] = Field(
+        None,
+        title="PM10",
+        description="Concentration of PM10 inhalable particles per ug/m3",
+    )
+    longitude: float = Field(
+        ...,
+        title="Longitud",
+        description="Physical longitud coordinate of the device",
+    )
+    latitude: float = Field(
+        ...,
+        title="Latitude",
+        description="Physical latitude coordinate of the device",
+    )
+    recorded: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        title="Recorded",
+        description="Date and time for when these values were measured",
+    )
 
     @validator("recorded")
     def must_be_utc(cls, v):
@@ -45,12 +77,36 @@ class Measurement(BaseModel):
 @dataclass
 class QueryParams:
 
-    source: str = Query(None)
-    start: datetime = Query(None)
-    end: datetime = Query(None)
-    longitude: float = Query(None)
-    latitude: float = Query(None)
-    distance: float = Query(None)
+    source: str = Query(
+        None,
+        title="Source",
+        description="Include measurements from this source only",
+    )
+    start: datetime = Query(
+        None,
+        title="Start",
+        description="Include measurements after this date and time",
+    )
+    end: datetime = Query(
+        None,
+        title="End",
+        description="Include measurements before this date and time",
+    )
+    longitude: float = Query(
+        None,
+        title="Longitude",
+        description="Target longitud coordinate",
+    )
+    latitude: float = Query(
+        None,
+        title="Latitude",
+        description="Target latitude coordinate",
+    )
+    distance: float = Query(
+        None,
+        title="Distance",
+        description="Include measurements that are this kilometers far from the target",
+    )
 
     @validator("start")
     def only_recent(cls, v):
@@ -60,7 +116,11 @@ class QueryParams:
 
 class Source(BaseModel):
 
-    source: str
+    source: str = Field(
+        ...,
+        title="Source",
+        description="Name used to identify the device",
+    )
 
     class Config:
         orm_mode = True
@@ -68,4 +128,8 @@ class Source(BaseModel):
 
 class APIKey(BaseModel):
 
-    key: str
+    key: str = Field(
+        ...,
+        title="API key",
+        description="The API key needed for authorization",
+    )

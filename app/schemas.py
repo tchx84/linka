@@ -36,26 +36,36 @@ class Measurement(BaseModel):
         None,
         title="PM1.0",
         description="Concentration of PM1.0 inhalable particles per ug/m3",
+        ge=0,
+        le=500,
     )
     pm2dot5: Optional[float] = Field(
         None,
         title="PM2.5",
         description="Concentration of PM2.5 inhalable particles per ug/m3",
+        ge=0,
+        le=500,
     )
     pm10: Optional[float] = Field(
         None,
         title="PM10",
         description="Concentration of PM10 inhalable particles per ug/m3",
+        ge=0,
+        le=500,
     )
     longitude: float = Field(
         ...,
         title="Longitud",
         description="Physical longitude coordinate of the device",
+        ge=-180,
+        le=180,
     )
     latitude: float = Field(
         ...,
         title="Latitude",
         description="Physical latitude coordinate of the device",
+        ge=-90,
+        le=90,
     )
     recorded: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc),

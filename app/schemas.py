@@ -25,7 +25,7 @@ class Measurement(BaseModel):
     sensor: str = Field(
         ...,
         title="Sensor",
-        description="Model of the sensor device",
+        description="Model of the device",
     )
     source: str = Field(
         ...,
@@ -50,7 +50,7 @@ class Measurement(BaseModel):
     longitude: float = Field(
         ...,
         title="Longitud",
-        description="Physical longitud coordinate of the device",
+        description="Physical longitude coordinate of the device",
     )
     latitude: float = Field(
         ...,
@@ -95,7 +95,7 @@ class QueryParams:
     longitude: float = Query(
         None,
         title="Longitude",
-        description="Target longitud coordinate",
+        description="Target longitude coordinate",
     )
     latitude: float = Query(
         None,

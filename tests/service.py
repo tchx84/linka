@@ -33,7 +33,7 @@ measurements = [
     {
         "sensor": "test",
         "source": "test",
-        "description": "test",
+        "description": None,
         "pm1dot0": 0.0,
         "pm2dot5": 0.0,
         "pm10": 0.0,

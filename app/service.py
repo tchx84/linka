@@ -20,6 +20,7 @@ from typing import List
 
 from . import models
 from . import schemas
+from . import reports
 from .db import db
 from .authentication import validate_api_key, validate_master_key
 
@@ -75,3 +76,8 @@ async def get(query: schemas.QueryParams = Depends(schemas.QueryParams)):
         schemas.Measurement.from_orm(m)
         for m in await models.Measurement.retrieve(db, query)
     ]
+
+
+@app.get("/api/v1/aqi", response_model=List[schemas.Report])
+async def aqi(query: schemas.QueryParams = Depends(schemas.QueryParams)):
+    return await reports.AQI.generate(db, query)

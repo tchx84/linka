@@ -14,6 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from datetime import datetime, timezone, timedelta
+from enum import Enum
 from pydantic import BaseModel, Field, validator
 from pydantic.dataclasses import dataclass
 from typing import Optional
@@ -142,4 +143,56 @@ class APIKey(BaseModel):
         ...,
         title="API key",
         description="The API key needed for authorization",
+    )
+
+
+class Category(str, Enum):
+    GOOD = "Good"
+    MODERATE = "Moderate"
+    UNHEALTHY_FOR_SENSITIVE_GROUPS = "Unhealthy for Sensitive Groups"
+    UNHEALTHY = "Unhealthy"
+    VERY_UNHEALTHY = "Very Unhealthy"
+    HAZARDOUS = "Hazardous"
+
+
+class Quality(BaseModel):
+
+    category: Category = Field(
+        ...,
+        title="Category",
+        description="Category according to the air quality index",
+    )
+    index: int = Field(
+        ...,
+        title="Index",
+        description="Index of the air quality",
+    )
+
+
+class Report(BaseModel):
+
+    sensor: str = Field(
+        ...,
+        title="Sensor",
+        description="Model of the device",
+    )
+    source: str = Field(
+        ...,
+        title="Source",
+        description="Name used to identify the device",
+    )
+    longitude: float = Query(
+        None,
+        title="Longitude",
+        description="Target longitude coordinate",
+    )
+    latitude: float = Query(
+        None,
+        title="Latitude",
+        description="Target latitude coordinate",
+    )
+    quality: Quality = Field(
+        ...,
+        title="Quality",
+        description="Quality according to AQI",
     )

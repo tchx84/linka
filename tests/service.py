@@ -40,6 +40,25 @@ measurements = [
         "latitude": -25.194156,
         "recorded": "2020-10-24T20:47:57.370721+00:00",
     },
+    {
+        "sensor": "aqi",
+        "source": "aqi",
+        "pm1dot0": 26.4,
+        "pm2dot5": 26.4,
+        "pm10": 26.4,
+        "longitude": -57.521369,
+        "latitude": -25.194156,
+        "recorded": "2020-10-24T20:47:57.370721+00:00",
+    },
+]
+aqi = [
+    {
+        "source": "aqi",
+        "sensor": "aqi",
+        "longitude": -57.521369,
+        "latitude": -25.194156,
+        "quality": {"category": "Moderate", "index": 81},
+    },
 ]
 
 MASTER_KEY = "EaDEFOuNiscENyok"
@@ -164,3 +183,14 @@ def test_delete_source():
 
     assert response.status_code == 200
     assert response.json() == []
+
+
+def test_aqi():
+    query = {
+        "start": "1984-04-24T00:00:00",
+        "source": "aqi",
+    }
+
+    response = client.get(f"/api/v1/aqi?{urlencode(query)}")
+    assert response.status_code == 200
+    assert response.json() == aqi

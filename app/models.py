@@ -34,6 +34,7 @@ measurements = sqlalchemy.Table(
     sqlalchemy.Column("recorded", sqlalchemy.DateTime),
     sqlalchemy.Column("sensor", sqlalchemy.String),
     sqlalchemy.Column("source", sqlalchemy.String),
+    sqlalchemy.Column("description", sqlalchemy.String, nullable=True),
     sqlalchemy.Column("pm1dot0", sqlalchemy.Float, nullable=True),
     sqlalchemy.Column("pm2dot5", sqlalchemy.Float, nullable=True),
     sqlalchemy.Column("pm10", sqlalchemy.Float, nullable=True),
@@ -88,6 +89,7 @@ class Measurement:
             [
                 measurements.c.sensor,
                 measurements.c.source,
+                measurements.c.description,
                 measurements.c.latitude,
                 measurements.c.longitude,
                 func.avg(measurements.c.pm2dot5).label("average"),
@@ -96,6 +98,7 @@ class Measurement:
         select = select.group_by(
             measurements.c.sensor,
             measurements.c.source,
+            measurements.c.description,
             measurements.c.latitude,
             measurements.c.longitude,
         )

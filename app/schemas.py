@@ -33,6 +33,11 @@ class Measurement(BaseModel):
         title="Source",
         description="Name used to identify the device",
     )
+    description: Optional[str] = Field(
+        ...,
+        title="Description",
+        description="User friendly name to identify the device",
+    )
     pm1dot0: Optional[float] = Field(
         None,
         title="PM1.0",
@@ -180,6 +185,11 @@ class Report(BaseModel):
         ...,
         title="Source",
         description="Name used to identify the device",
+    )
+    description: Optional[str] = Field(
+        ...,
+        title="Description",
+        description="User friendly name to identify the device",
     )
     longitude: float = Query(
         None,

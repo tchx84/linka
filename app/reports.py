@@ -70,6 +70,7 @@ class AQI:
         return schemas.Report(
             sensor=source.sensor,
             source=source.source,
+            description=source.description,
             latitude=source.latitude,
             longitude=source.longitude,
             quality=quality,

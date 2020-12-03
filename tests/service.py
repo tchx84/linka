@@ -33,6 +33,7 @@ measurements = [
     {
         "sensor": "test",
         "source": "test",
+        "description": "test",
         "pm1dot0": 0.0,
         "pm2dot5": 0.0,
         "pm10": 0.0,
@@ -43,6 +44,7 @@ measurements = [
     {
         "sensor": "aqi",
         "source": "aqi",
+        "description": "aqi",
         "pm1dot0": 26.4,
         "pm2dot5": 26.4,
         "pm10": 26.4,
@@ -55,6 +57,7 @@ aqi = [
     {
         "source": "aqi",
         "sensor": "aqi",
+        "description": "aqi",
         "longitude": -57.521369,
         "latitude": -25.194156,
         "quality": {"category": "Moderate", "index": 81},

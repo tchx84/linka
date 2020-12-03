@@ -20,6 +20,7 @@ import sqlalchemy
 import uuid
 import hashlib
 
+from sqlalchemy import func
 from databases.core import Database
 from typing import Dict, List, Set, Tuple
 
@@ -56,9 +57,7 @@ class Measurement:
         await db.execute_many(insert, measurements_)
 
     @staticmethod
-    async def retrieve(db, query):
-        select = measurements.select()
-
+    def filter(select, query):
         if query.start is not None:
             select = select.where(measurements.c.recorded >= query.start)
         if query.end is not None:
@@ -80,6 +79,34 @@ class Measurement:
             select = select.where(measurements.c.longitude <= east.longitude)
             select = select.where(measurements.c.latitude >= south.latitude)
             select = select.where(measurements.c.longitude >= west.longitude)
+
+        return select
+
+    @staticmethod
+    async def average(db, query):
+        select = sqlalchemy.select(
+            [
+                measurements.c.sensor,
+                measurements.c.source,
+                measurements.c.latitude,
+                measurements.c.longitude,
+                func.avg(measurements.c.pm2dot5).label("average"),
+            ]
+        )
+        select = select.group_by(
+            measurements.c.sensor,
+            measurements.c.source,
+            measurements.c.latitude,
+            measurements.c.longitude,
+        )
+        select = Measurement.filter(select, query)
+
+        return await db.fetch_all(select)
+
+    @staticmethod
+    async def retrieve(db, query):
+        select = measurements.select()
+        select = Measurement.filter(select, query)
 
         return await db.fetch_all(select)
 

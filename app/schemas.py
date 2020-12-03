@@ -34,7 +34,7 @@ class Measurement(BaseModel):
         description="Name used to identify the device",
     )
     description: Optional[str] = Field(
-        ...,
+        None,
         title="Description",
         description="User friendly name to identify the device",
     )
@@ -187,7 +187,7 @@ class Report(BaseModel):
         description="Name used to identify the device",
     )
     description: Optional[str] = Field(
-        ...,
+        None,
         title="Description",
         description="User friendly name to identify the device",
     )

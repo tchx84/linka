@@ -38,6 +38,9 @@ measurements = sqlalchemy.Table(
     sqlalchemy.Column("pm1dot0", sqlalchemy.Float, nullable=True),
     sqlalchemy.Column("pm2dot5", sqlalchemy.Float, nullable=True),
     sqlalchemy.Column("pm10", sqlalchemy.Float, nullable=True),
+    sqlalchemy.Column("humidity", sqlalchemy.Float, nullable=True),
+    sqlalchemy.Column("temperature", sqlalchemy.Float, nullable=True),
+    sqlalchemy.Column("pressure", sqlalchemy.Float, nullable=True),
     sqlalchemy.Column("longitude", sqlalchemy.Float),
     sqlalchemy.Column("latitude", sqlalchemy.Float),
 )

@@ -59,6 +59,27 @@ class Measurement(BaseModel):
         ge=0,
         le=500,
     )
+    humidity: Optional[float] = Field(
+        None,
+        title="Humidity",
+        description="Concentration of water vapor present in the air",
+        ge=1.0,  # Coober Pedy, South Australia
+        le=100.0,  # Sea ?
+    )
+    temperature: Optional[float] = Field(
+        None,
+        title="Temperature",
+        description="Temperature in celsius degrees",
+        ge=-89.2,  # Vostok, Antarctica
+        le=134.0,  # Death Valley, California
+    )
+    pressure: Optional[float] = Field(
+        None,
+        title="Pressure",
+        description="Pressure within the atmosphere of Earth in hPa",
+        ge=870.0,  # Typhoon Tip, Pacific Ocean
+        le=1084.0,  # Agata, Siberia
+    )
     longitude: float = Field(
         ...,
         title="Longitud",

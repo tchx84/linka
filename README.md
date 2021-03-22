@@ -5,7 +5,7 @@ LINKA is an open source service to record air quality data from community sensor
 ## Install
 
 ```
-$ sudo dnf install python3-virtualenv
+$ sudo dnf install python3-virtualenv python-devel
 $ virtualenv env
 $ source ./env/bin/activate
 $ pip install -r requirements.txt
@@ -24,6 +24,7 @@ Your new API key is: f710b83cee5f43d2b73cbec810dc842c (use the new generated API
 ## Run
 
 ```
+$ source ./env/bin/activate
 $ gunicorn --bind 0.0.0.0:5000 --graceful-timeout 300 --timeout 300 --worker-class=uvicorn.workers.UvicornWorker --worker-connections=10 --workers=3 wsgi-service:app
 ```
 

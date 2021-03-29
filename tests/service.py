@@ -69,6 +69,7 @@ aqi = [
         "quality": {"category": "Moderate", "index": 81},
     },
 ]
+stats = []
 
 MASTER_KEY = "EaDEFOuNiscENyok"
 master_headers = {"X-API-Key": MASTER_KEY}
@@ -203,3 +204,9 @@ def test_aqi():
     response = client.get(f"/api/v1/aqi?{urlencode(query)}")
     assert response.status_code == 200
     assert response.json() == aqi
+
+
+def test_stats():
+    response = client.get("/api/v1/stats")
+    assert response.status_code == 200
+    assert response.json() == stats

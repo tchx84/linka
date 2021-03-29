@@ -81,3 +81,8 @@ async def get(query: schemas.QueryParams = Depends(schemas.QueryParams)):
 @app.get("/api/v1/aqi", response_model=List[schemas.Report])
 async def aqi(query: schemas.QueryParams = Depends(schemas.QueryParams)):
     return await reports.AQI.generate(db, query)
+
+
+@app.get("/api/v1/stats", response_model=List[schemas.ReportStats])
+async def stats(query: schemas.QueryParams = Depends(schemas.QueryParams)):
+    return await reports.Stats.generate(db, query)

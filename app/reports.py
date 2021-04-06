@@ -84,5 +84,17 @@ class AQI:
 
 class Stats:
     @staticmethod
+    def get_stat(source):
+        return schemas.ReportStats(
+            sensor=source.sensor,
+            source=source.source,
+            description=source.description,
+            latitude=source.latitude,
+            longitude=source.longitude,
+            average=source.average,
+        )
+
+    @staticmethod
     async def generate(db, query):
-        return []
+        sources = await Measurement.average(db, query)
+        return [Stats.get_stat(s) for s in sources]

@@ -12,3 +12,4 @@ alembic==1.4.3
 geopy==2.0.0
 click==7.1.2
 tabulate==0.8.7
+starlette>=0.13.5 # not directly required, pinned by Snyk to avoid a vulnerability

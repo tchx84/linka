@@ -92,6 +92,8 @@ class Stats:
             latitude=source.latitude,
             longitude=source.longitude,
             average=source.average,
+            maximum=source.maximum,
+            minimum=source.minimum,
         )
 
     @staticmethod

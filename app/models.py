@@ -96,6 +96,8 @@ class Measurement:
                 measurements.c.latitude,
                 measurements.c.longitude,
                 func.avg(measurements.c.pm2dot5).label("average"),
+                func.max(measurements.c.pm2dot5).label("maximum"),
+                func.min(measurements.c.pm2dot5).label("minimum"),
             ]
         )
         select = select.group_by(

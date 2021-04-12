@@ -77,6 +77,8 @@ stats = [
         "longitude": -57.521369,
         "latitude": -25.194156,
         "average": 26.4,
+        "maximum": 26.4,
+        "minimum": 26.4,
     },
     {
         "sensor": "test",
@@ -85,6 +87,8 @@ stats = [
         "longitude": -57.521369,
         "latitude": -25.194156,
         "average": 0.0,
+        "maximum": 0.0,
+        "minimum": 0.0,
     },
 ]
 

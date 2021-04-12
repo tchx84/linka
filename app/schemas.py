@@ -261,3 +261,13 @@ class ReportStats(BaseModel):
         title="Average",
         description="Historical average for a sensor",
     )
+    maximum: float = Field(
+        ...,
+        title="Maximum",
+        description="Historical maximum for a sensor",
+    )
+    minimum: float = Field(
+        ...,
+        title="Minimum",
+        description="Historical minimum for a sensor",
+    )

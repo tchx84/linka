@@ -87,7 +87,7 @@ class Measurement:
         return select
 
     @staticmethod
-    async def average(db, query):
+    async def stats(db, query):
         select = sqlalchemy.select(
             [
                 measurements.c.sensor,

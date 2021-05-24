@@ -87,7 +87,7 @@ class Measurement:
         return select
 
     @staticmethod
-    async def average(db, query):
+    async def stats(db, query):
         select = sqlalchemy.select(
             [
                 measurements.c.sensor,
@@ -96,6 +96,8 @@ class Measurement:
                 measurements.c.latitude,
                 measurements.c.longitude,
                 func.avg(measurements.c.pm2dot5).label("average"),
+                func.max(measurements.c.pm2dot5).label("maximum"),
+                func.min(measurements.c.pm2dot5).label("minimum"),
             ]
         )
         select = select.group_by(

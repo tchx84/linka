@@ -69,6 +69,28 @@ aqi = [
         "quality": {"category": "Moderate", "index": 81},
     },
 ]
+stats = [
+    {
+        "source": "aqi",
+        "sensor": "aqi",
+        "description": "aqi",
+        "longitude": -57.521369,
+        "latitude": -25.194156,
+        "average": 26.4,
+        "maximum": 26.4,
+        "minimum": 26.4,
+    },
+    {
+        "sensor": "test",
+        "source": "test",
+        "description": None,
+        "longitude": -57.521369,
+        "latitude": -25.194156,
+        "average": 0.0,
+        "maximum": 0.0,
+        "minimum": 0.0,
+    },
+]
 
 MASTER_KEY = "EaDEFOuNiscENyok"
 master_headers = {"X-API-Key": MASTER_KEY}
@@ -203,3 +225,11 @@ def test_aqi():
     response = client.get(f"/api/v1/aqi?{urlencode(query)}")
     assert response.status_code == 200
     assert response.json() == aqi
+
+
+def test_stats():
+    query = {"start": "1984-04-24T00:00:00"}
+
+    response = client.get(f"/api/v1/stats?{urlencode(query)}")
+    assert response.status_code == 200
+    assert response.json() == stats

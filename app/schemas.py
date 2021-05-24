@@ -227,3 +227,47 @@ class Report(BaseModel):
         title="Quality",
         description="Quality according to AQI",
     )
+
+
+class ReportStats(BaseModel):
+
+    sensor: str = Field(
+        ...,
+        title="Sensor",
+        description="Model of the device",
+    )
+    source: str = Field(
+        ...,
+        title="Source",
+        description="Name used to identify the device",
+    )
+    description: Optional[str] = Field(
+        None,
+        title="Description",
+        description="User friendly name to identify the device",
+    )
+    longitude: float = Query(
+        None,
+        title="Longitude",
+        description="Target longitude coordinate",
+    )
+    latitude: float = Query(
+        None,
+        title="Latitude",
+        description="Target latitude coordinate",
+    )
+    average: float = Field(
+        ...,
+        title="Average",
+        description="Historical average for a sensor",
+    )
+    maximum: float = Field(
+        ...,
+        title="Maximum",
+        description="Historical maximum for a sensor",
+    )
+    minimum: float = Field(
+        ...,
+        title="Minimum",
+        description="Historical minimum for a sensor",
+    )

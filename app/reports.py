@@ -78,5 +78,25 @@ class AQI:
 
     @staticmethod
     async def generate(db, query):
-        sources = await Measurement.average(db, query)
+        sources = await Measurement.stats(db, query)
         return [AQI.get_quality(s) for s in sources]
+
+
+class Stats:
+    @staticmethod
+    def get_stat(source):
+        return schemas.ReportStats(
+            sensor=source.sensor,
+            source=source.source,
+            description=source.description,
+            latitude=source.latitude,
+            longitude=source.longitude,
+            average=source.average,
+            maximum=source.maximum,
+            minimum=source.minimum,
+        )
+
+    @staticmethod
+    async def generate(db, query):
+        sources = await Measurement.stats(db, query)
+        return [Stats.get_stat(s) for s in sources]

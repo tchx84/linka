@@ -17,7 +17,7 @@ def api_keys() -> None:
 @api_keys.command(name="list")
 @coro
 async def list_() -> None:
-    """ List current sources registered with an API Key """
+    """List current sources registered with an API Key"""
     sources = await models.APIKey.get_sources(db)
     click.echo(
         tabulate(

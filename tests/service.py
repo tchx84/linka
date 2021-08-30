@@ -91,6 +91,10 @@ stats = [
         "minimum": 0.0,
     },
 ]
+status = {
+    "service": "UP",
+    "database": "UP",
+}
 
 MASTER_KEY = "EaDEFOuNiscENyok"
 master_headers = {"X-API-Key": MASTER_KEY}
@@ -233,3 +237,9 @@ def test_stats():
     response = client.get(f"/api/v1/stats?{urlencode(query)}")
     assert response.status_code == 200
     assert response.json() == stats
+
+
+def test_status():
+    response = client.get("/api/v1/status")
+    assert response.status_code == 200
+    assert response.json() == status

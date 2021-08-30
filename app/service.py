@@ -86,3 +86,13 @@ async def aqi(query: schemas.QueryParams = Depends(schemas.QueryParams)):
 @app.get("/api/v1/stats", response_model=List[schemas.ReportStats])
 async def stats(query: schemas.QueryParams = Depends(schemas.QueryParams)):
     return await reports.Stats.generate(db, query)
+
+
+@app.get("/api/v1/status", response_model=schemas.ServiceStatus)
+async def status():
+    status = schemas.ServiceStatus()
+
+    if db.connection() is None:
+        status.database = schemas.Status.DOWN
+
+    return status

@@ -271,3 +271,22 @@ class ReportStats(BaseModel):
         title="Minimum",
         description="Historical minimum for a sensor",
     )
+
+
+class Status(str, Enum):
+    UP = "UP"
+    DOWN = "DOWN"
+
+
+class ServiceStatus(BaseModel):
+
+    service: Status = Field(
+        Status.UP,
+        title="Service",
+        description="Operational status of the service",
+    )
+    database: Status = Field(
+        Status.UP,
+        title="Database",
+        description="Operational status of the database",
+    )

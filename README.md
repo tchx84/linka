@@ -32,40 +32,6 @@ $ gunicorn --bind 0.0.0.0:5000 --graceful-timeout 300 --timeout 300 --worker-cla
 
 Run the service and check http://localhost:5000/docs
 
-## Docker
-
-```
-$ docker build -t linka .
-$ docker run -d -p 5000:5000 --name linka linka
-```
-
-When running, you can set the following environment variables:
-
-| Variable           | Default Value               |
-|--------------------|-----------------------------|
-| CONTAINER_PORT     | 5000                        |
-| BIND_INTERFACE     | 0.0.0.0                     |
-| GRACEFUL_TIMEOUT   | 300                         |
-| TIMEOUT            | 300                         |
-| WORKER_CONNECTIONS | 10                          |
-| WORKERS            | 3                           |
-| DATABASE_URL       | sqlite:///./default.db      |
-| LINKA_MASTER_KEY   | ""                          |
-
-## API Keys Management
-Create, list and revoke the API keys for a specific source.
-
-### create
-`$ linka-cli api-keys create SOURCE`
-
-### list
-`$ linka-cli api-keys list`
-
-### revoke
-`$ linka-cli api-keys revoke SOURCE [--all] [--key]`
-
-Either provide `--all` for revoking all the keys associated to a source or `--key` to revoke a single key.
-
 # Disclaimer
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.

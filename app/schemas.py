@@ -229,6 +229,12 @@ class Report(BaseModel):
     )
 
 
+class BasicStats(BaseModel):
+    average: float
+    maximum: float
+    minimum: float
+
+
 class ReportStats(BaseModel):
 
     sensor: str = Field(
@@ -256,20 +262,21 @@ class ReportStats(BaseModel):
         title="Latitude",
         description="Target latitude coordinate",
     )
-    average: float = Field(
-        ...,
-        title="Average",
-        description="Historical average for a sensor",
+    pm1dot0: BasicStats = Field(
+        ..., title="pm1dot0", description="Basic stats from pm1dot0"
     )
-    maximum: float = Field(
-        ...,
-        title="Maximum",
-        description="Historical maximum for a sensor",
+    pm2dot5: BasicStats = Field(
+        ..., title="pm2dot5", description="Basic stats from pm2dot5"
     )
-    minimum: float = Field(
-        ...,
-        title="Minimum",
-        description="Historical minimum for a sensor",
+    pm10: BasicStats = Field(..., title="pm10", description="Basic stats from pm10")
+    humidity: BasicStats = Field(
+        ..., title="humidity", description="Basic stats from humidity"
+    )
+    temperature: BasicStats = Field(
+        ..., title="temperature", description="Basic stats from temperature"
+    )
+    pressure: BasicStats = Field(
+        ..., title="pressure", description="Basic stats from pressure"
     )
 
 

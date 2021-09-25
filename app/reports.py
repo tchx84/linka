@@ -52,7 +52,7 @@ class AQI:
     @staticmethod
     def get_quality(source):
         concentration = next(
-            c for c in CONCENTRATIONS if c[0] <= source.average <= c[1]
+            c for c in CONCENTRATIONS if c[0] <= source.pm2dot5_average <= c[1]
         )
 
         breakpoint_index = CONCENTRATIONS.index(concentration)
@@ -60,7 +60,7 @@ class AQI:
 
         index = (
             (breakpoint[1] - breakpoint[0]) / (concentration[1] - concentration[0])
-        ) * (source.average - concentration[0]) + breakpoint[0]
+        ) * (source.pm2dot5_average - concentration[0]) + breakpoint[0]
         index_breakpoint = next(b for b in BREAKPOINTS if b[0] <= index <= b[1])
 
         category_index = BREAKPOINTS.index(index_breakpoint)
@@ -91,9 +91,36 @@ class Stats:
             description=source.description,
             latitude=source.latitude,
             longitude=source.longitude,
-            average=source.average,
-            maximum=source.maximum,
-            minimum=source.minimum,
+            pm1dot0=schemas.BasicStats(
+                average=source.pm1dot0_average,
+                maximum=source.pm1dot0_maximum,
+                minimum=source.pm1dot0_minimum,
+            ),
+            pm2dot5=schemas.BasicStats(
+                average=source.pm2dot5_average,
+                maximum=source.pm2dot5_maximum,
+                minimum=source.pm2dot5_minimum,
+            ),
+            pm10=schemas.BasicStats(
+                average=source.pm10_average,
+                maximum=source.pm10_maximum,
+                minimum=source.pm10_minimum,
+            ),
+            humidity=schemas.BasicStats(
+                average=source.humidity_average,
+                maximum=source.humidity_maximum,
+                minimum=source.humidity_minimum,
+            ),
+            temperature=schemas.BasicStats(
+                average=source.temperature_average,
+                maximum=source.temperature_maximum,
+                minimum=source.temperature_minimum,
+            ),
+            pressure=schemas.BasicStats(
+                average=source.pressure_average,
+                maximum=source.pressure_maximum,
+                minimum=source.pressure_minimum,
+            ),
         )
 
     @staticmethod

@@ -88,18 +88,37 @@ class Measurement:
 
     @staticmethod
     async def stats(db, query):
-        select = sqlalchemy.select(
-            [
-                measurements.c.sensor,
-                measurements.c.source,
-                measurements.c.description,
-                measurements.c.latitude,
-                measurements.c.longitude,
-                func.avg(measurements.c.pm2dot5).label("average"),
-                func.max(measurements.c.pm2dot5).label("maximum"),
-                func.min(measurements.c.pm2dot5).label("minimum"),
-            ]
-        )
+        measurements_dict = {
+            "pm1dot0": measurements.c.pm1dot0,
+            "pm2dot5": measurements.c.pm2dot5,
+            "pm10": measurements.c.pm10,
+            "humidity": measurements.c.humidity,
+            "temperature": measurements.c.temperature,
+            "pressure": measurements.c.pressure,
+        }
+        measurements_stats = [
+            measurements.c.sensor,
+            measurements.c.source,
+            measurements.c.description,
+            measurements.c.latitude,
+            measurements.c.longitude,
+        ]
+        for measurement in measurements_dict.keys():
+            measurements_stats.extend(
+                [
+                    func.avg(measurements_dict[measurement]).label(
+                        f"{measurement}_average"
+                    ),
+                    func.max(measurements_dict[measurement]).label(
+                        f"{measurement}_maximum"
+                    ),
+                    func.min(measurements_dict[measurement]).label(
+                        f"{measurement}_minimum"
+                    ),
+                ]
+            )
+
+        select = sqlalchemy.select(measurements_stats)
         select = select.group_by(
             measurements.c.sensor,
             measurements.c.source,

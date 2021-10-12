@@ -1,0 +1,22 @@
+{% extends 'layout/main.html' %}
+
+{% block content %}
+
+  {% if registered %}
+  <p>Your email has been confirmed correctly. We are sending an email with your new API key</p>
+  {% elif not email %}
+  <p>Welcome, please register your user:</p>
+  <form action="/register" method=POST>
+    <div class="field">
+      <label class="label">Email</label>
+      <div class="control">
+        <input name="email" class="input" type="email" placeholder="e.g. alexsmith@gmail.com">
+      </div>
+    </div>
+    <button type=submit class="button is-link">Register</button>
+  </form>
+  {% else %}
+  <p>An email has been sended to <strong>{{ email }}</strong></p>
+  {% endif %}
+
+{% endblock %}

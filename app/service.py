@@ -13,9 +13,12 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Request, Form, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security.api_key import APIKey
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+
 from typing import List
 
 from . import models
@@ -23,6 +26,7 @@ from . import schemas
 from . import reports
 from .db import db
 from .authentication import validate_api_key, validate_master_key
+from .send_email import send_email_background, send_email_async
 
 
 app = FastAPI()
@@ -35,6 +39,9 @@ app.add_middleware(
 )
 
 
+templates = Jinja2Templates(directory="app/templates")
+
+
 @app.on_event("startup")
 async def startup():
     await db.connect()
@@ -43,6 +50,32 @@ async def startup():
 @app.on_event("shutdown")
 async def shutdown():
     await db.disconnect()
+
+
+#TODO: @tchx84 consider moving the register sections to a multi-project (blueprint in flask terminology)
+@app.get("/", response_class=HTMLResponse)
+async def welcome(request: Request):
+    return templates.TemplateResponse("welcome.html", {"request": request})
+
+
+@app.post("/register", response_class=HTMLResponse)
+async def register(request: Request, email: str = Form(...)):
+    challenge = await models.APIKey.create_new_key(db, email, True)
+    await send_email_async('Linka Registration', email,
+            {'title': 'Linka registration', 'challenge': challenge, 'base_url': 'http://localhost:8000',
+                'message': 'You have requested your registration for linka.'
+                ' To get your access token please click on the next button'})
+    return templates.TemplateResponse("welcome.html", {"request": request, "email": email})
+
+
+@app.get("/confirm/{challenge}", response_class=HTMLResponse)
+async def confirm(request: Request, challenge: str):
+    api_key_record = await models.APIKey.confirm_key(db, challenge)
+    await send_email_async('Linka API Token', api_key_record['source'],
+            {'title': 'Linka API Token', 'token': api_key_record['key'],
+                'message': 'This is your Linka API Token.'
+                ' Don\'t share it with anyone:'})
+    return templates.TemplateResponse("welcome.html", {"request": request, "registered": True})
 
 
 @app.post("/api/v1/sources", response_model=schemas.APIKey)

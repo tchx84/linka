@@ -145,12 +145,25 @@ class APIKey:
         await db.execute(insert, api_key)
 
     @staticmethod
-    async def create_new_key(db: Database, source: str) -> str:
+    async def create_new_key(db: Database, source: str, as_token = False) -> str:
         raw_api_key = uuid.uuid4().hex
-        api_key_hash = hashlib.sha256(raw_api_key.encode("utf-8")).hexdigest()
+        if as_token:
+            api_key_hash = hashlib.sha256(raw_api_key.encode("utf-8")).hexdigest()
+        else:
+            api_key_hash = hashlib.md5(raw_api_key.encode("utf-8")).hexdigest()
         api_key = {"source": source, "api_key_hash": api_key_hash}
         await APIKey.store(db, api_key)
         return raw_api_key
+
+    @staticmethod
+    async def confirm_key(db: Database, raw_api_key: str) -> str:
+        api_key_hash = hashlib.sha256(raw_api_key.encode("utf-8")).hexdigest()
+        query = api_keys.select().where(api_keys.c.api_key_hash == api_key_hash)
+        keys_found = await db.fetch_all(query)
+        if len(keys_found) > 0:
+            return { 'key': await APIKey.create_new_key(db, keys_found[0].source),
+                     'source': keys_found[0].source }
+        return None
 
     @staticmethod
     async def get_sources(db: Database) -> List[Tuple[str, int]]:

@@ -41,6 +41,7 @@ measurements = sqlalchemy.Table(
     sqlalchemy.Column("humidity", sqlalchemy.Float, nullable=True),
     sqlalchemy.Column("temperature", sqlalchemy.Float, nullable=True),
     sqlalchemy.Column("pressure", sqlalchemy.Float, nullable=True),
+    sqlalchemy.Column("co2", sqlalchemy.Float, nullable=True),
     sqlalchemy.Column("longitude", sqlalchemy.Float),
     sqlalchemy.Column("latitude", sqlalchemy.Float),
 )
@@ -95,6 +96,7 @@ class Measurement:
             "humidity": measurements.c.humidity,
             "temperature": measurements.c.temperature,
             "pressure": measurements.c.pressure,
+            "co2": measurements.c.co2,
         }
         measurements_stats = [
             measurements.c.sensor,

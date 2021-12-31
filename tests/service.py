@@ -40,6 +40,7 @@ measurements = [
         "humidity": 1.0,
         "temperature": -89.2,
         "pressure": 870.0,
+        "co2": 200.0,
         "longitude": -57.521369,
         "latitude": -25.194156,
         "recorded": "2020-10-24T20:47:57.370721+00:00",
@@ -54,6 +55,7 @@ measurements = [
         "humidity": 100.0,
         "temperature": 134.0,
         "pressure": 1084.0,
+        "co2": 1000.0,
         "longitude": -57.521369,
         "latitude": -25.194156,
         "recorded": "2020-10-24T20:47:57.370721+00:00",
@@ -81,6 +83,7 @@ stats = [
         "pm2dot5": {"average": 26.4, "maximum": 26.4, "minimum": 26.4},
         "humidity": {"average": 100.0, "maximum": 100.0, "minimum": 100.0},
         "pressure": {"average": 1084.0, "maximum": 1084.0, "minimum": 1084.0},
+        "co2": {"average": 1000.0, "maximum": 1000.0, "minimum": 1000.0},
         "temperature": {"average": 134.0, "maximum": 134.0, "minimum": 134.0},
     },
     {
@@ -94,6 +97,7 @@ stats = [
         "pm2dot5": {"average": 0.0, "maximum": 0.0, "minimum": 0.0},
         "humidity": {"average": 1.0, "maximum": 1.0, "minimum": 1.0},
         "pressure": {"average": 870.0, "maximum": 870.0, "minimum": 870.0},
+        "co2": {"average": 200.0, "maximum": 200.0, "minimum": 200.0},
         "temperature": {"average": -89.2, "maximum": -89.2, "minimum": -89.2},
     },
 ]

@@ -121,6 +121,11 @@ class Stats:
                 maximum=source.pressure_maximum,
                 minimum=source.pressure_minimum,
             ),
+            co2=schemas.BasicStats(
+                average=source.co2_average,
+                maximum=source.co2_maximum,
+                minimum=source.co2_minimum,
+            ),
         )
 
     @staticmethod

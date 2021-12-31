@@ -80,6 +80,13 @@ class Measurement(BaseModel):
         ge=870.0,  # Typhoon Tip, Pacific Ocean
         le=1084.0,  # Agata, Siberia
     )
+    co2: Optional[float] = Field(
+        None,
+        title="CO2",
+        description="Carbon dioxide concentration in ppm",
+        ge=50.0,  # Closed system with plants
+        le=80000.0,  # Twice the IDLH
+    )
     longitude: float = Field(
         ...,
         title="Longitud",
@@ -278,6 +285,7 @@ class ReportStats(BaseModel):
     pressure: BasicStats = Field(
         ..., title="pressure", description="Basic stats from pressure"
     )
+    co2: BasicStats = Field(..., title="CO2", description="Basic stats from CO2")
 
 
 class Status(str, Enum):

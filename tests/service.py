@@ -60,6 +60,21 @@ measurements = [
         "latitude": -25.194156,
         "recorded": "2020-10-24T20:47:57.370721+00:00",
     },
+    {
+        "sensor": "nullable",
+        "source": "nullable",
+        "description": "nullable",
+        "pm1dot0": None,
+        "pm2dot5": None,
+        "pm10": None,
+        "humidity": None,
+        "temperature": None,
+        "pressure": None,
+        "co2": None,
+        "longitude": -57.521369,
+        "latitude": -25.194156,
+        "recorded": "2020-10-24T20:47:57.370721+00:00",
+    },
 ]
 aqi = [
     {
@@ -85,6 +100,20 @@ stats = [
         "pressure": {"average": 1084.0, "maximum": 1084.0, "minimum": 1084.0},
         "co2": {"average": 1000.0, "maximum": 1000.0, "minimum": 1000.0},
         "temperature": {"average": 134.0, "maximum": 134.0, "minimum": 134.0},
+    },
+    {
+        "sensor": "nullable",
+        "source": "nullable",
+        "description": "nullable",
+        "longitude": -57.521369,
+        "latitude": -25.194156,
+        "pm10": {"average": None, "maximum": None, "minimum": None},
+        "pm1dot0": {"average": None, "maximum": None, "minimum": None},
+        "pm2dot5": {"average": None, "maximum": None, "minimum": None},
+        "humidity": {"average": None, "maximum": None, "minimum": None},
+        "pressure": {"average": None, "maximum": None, "minimum": None},
+        "co2": {"average": None, "maximum": None, "minimum": None},
+        "temperature": {"average": None, "maximum": None, "minimum": None},
     },
     {
         "sensor": "test",

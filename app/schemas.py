@@ -17,7 +17,7 @@ from datetime import datetime, timezone, timedelta
 from enum import Enum
 from pydantic import BaseModel, Field, validator
 from pydantic.dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Union
 from fastapi import Query
 
 
@@ -237,9 +237,9 @@ class Report(BaseModel):
 
 
 class BasicStats(BaseModel):
-    average: float
-    maximum: float
-    minimum: float
+    average: Union[float, None]
+    maximum: Union[float, None]
+    minimum: Union[float, None]
 
 
 class ReportStats(BaseModel):

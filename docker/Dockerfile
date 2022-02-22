@@ -12,6 +12,10 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
+# Copy startup script
+COPY docker/startup.sh .
+RUN chmod 755 startup.sh
+
 # Copy application
 COPY . .
 
@@ -32,5 +36,5 @@ EXPOSE ${CONTAINER_PORT}
 RUN alembic upgrade head
 
 # run gunicorn
-CMD ["sh", "-c", "gunicorn --bind ${BIND_INTERFACE}:${CONTAINER_PORT} --graceful-timeout ${GRACEFUL_TIMEOUT} --timeout ${TIMEOUT} --worker-class=uvicorn.workers.UvicornWorker --worker-connections ${WORKER_CONNECTIONS} --workers ${WORKERS} wsgi-service:app"]
+CMD ["sh", "./startup.sh"]
 

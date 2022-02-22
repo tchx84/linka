@@ -14,7 +14,6 @@ RUN pip install -r requirements.txt
 
 # Copy startup script
 COPY docker/startup.sh .
-RUN chmod 755 startup.sh
 
 # Copy application
 COPY . .
@@ -30,10 +29,6 @@ ENV     CONTAINER_PORT=5000 \
         LINKA_MASTER_KEY=""
 
 EXPOSE ${CONTAINER_PORT}
-
-# Setup Database
-
-RUN alembic upgrade head
 
 # run gunicorn
 CMD ["sh", "./startup.sh"]

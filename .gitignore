@@ -4,4 +4,4 @@ venv/
 .venv
 .vscode
 env
-/.idea/
+.idea/

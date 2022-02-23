@@ -4,3 +4,4 @@ venv/
 .venv
 .vscode
 env
+.idea/

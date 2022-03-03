@@ -34,6 +34,7 @@ measurements = sqlalchemy.Table(
     sqlalchemy.Column("recorded", sqlalchemy.DateTime),
     sqlalchemy.Column("sensor", sqlalchemy.String),
     sqlalchemy.Column("source", sqlalchemy.String),
+    sqlalchemy.Column("version", sqlalchemy.String, nullable=True),
     sqlalchemy.Column("description", sqlalchemy.String, nullable=True),
     sqlalchemy.Column("pm1dot0", sqlalchemy.Float, nullable=True),
     sqlalchemy.Column("pm2dot5", sqlalchemy.Float, nullable=True),

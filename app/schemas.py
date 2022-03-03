@@ -38,6 +38,11 @@ class Measurement(BaseModel):
         title="Description",
         description="User friendly name to identify the device",
     )
+    version: Optional[str] = Field(
+        None,
+        title="Version",
+        description="Firmware version of the device",
+    )
     pm1dot0: Optional[float] = Field(
         None,
         title="PM1.0",

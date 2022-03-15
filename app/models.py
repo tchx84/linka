@@ -22,7 +22,7 @@ import hashlib
 
 from sqlalchemy import func
 from databases.core import Database
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List, Set, Tuple, Union
 
 from .db import metadata
 
@@ -32,6 +32,7 @@ measurements = sqlalchemy.Table(
     metadata,
     sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
     sqlalchemy.Column("recorded", sqlalchemy.DateTime),
+    sqlalchemy.Column("origin", sqlalchemy.String),
     sqlalchemy.Column("sensor", sqlalchemy.String),
     sqlalchemy.Column("source", sqlalchemy.String),
     sqlalchemy.Column("version", sqlalchemy.String, nullable=True),
@@ -51,7 +52,7 @@ api_keys = sqlalchemy.Table(
     "api_keys",
     metadata,
     sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
-    sqlalchemy.Column("source", sqlalchemy.String, nullable=False),
+    sqlalchemy.Column("origin", sqlalchemy.String, nullable=False),
     sqlalchemy.Column("api_key_hash", sqlalchemy.String(length=65), nullable=False),
 )
 
@@ -148,32 +149,32 @@ class APIKey:
         await db.execute(insert, api_key)
 
     @staticmethod
-    async def create_new_key(db: Database, source: str) -> str:
+    async def create_new_key(db: Database, origin: str) -> str:
         raw_api_key = uuid.uuid4().hex
         api_key_hash = hashlib.sha256(raw_api_key.encode("utf-8")).hexdigest()
-        api_key = {"source": source, "api_key_hash": api_key_hash}
+        api_key = {"origin": origin, "api_key_hash": api_key_hash}
         await APIKey.store(db, api_key)
         return raw_api_key
 
     @staticmethod
-    async def get_sources(db: Database) -> List[Tuple[str, int]]:
+    async def get_origins(db: Database) -> List[Tuple[str, int]]:
         query = sqlalchemy.select(
-            [api_keys.c.source, sqlalchemy.func.count(api_keys.c.source)]
-        ).group_by(api_keys.c.source)
+            [api_keys.c.origin, sqlalchemy.func.count(api_keys.c.origin)]
+        ).group_by(api_keys.c.origin)
         return await db.fetch_all(query)
 
     @staticmethod
-    async def revoke_key(db: Database, source: str, raw_api_key: str) -> bool:
+    async def revoke_key(db: Database, origin: str, raw_api_key: str) -> bool:
         api_key_hash = hashlib.sha256(raw_api_key.encode("utf-8")).hexdigest()
         delete = api_keys.delete()
-        query = delete.where(api_keys.c.source == source)
+        query = delete.where(api_keys.c.origin == origin)
         query = query.where(api_keys.c.api_key_hash == api_key_hash)
         return await db.execute(query)
 
     @staticmethod
-    async def revoke_all_keys(db: Database, source: str) -> bool:
+    async def revoke_all_keys(db: Database, origin: str) -> bool:
         delete = api_keys.delete()
-        query = delete.where(api_keys.c.source == source)
+        query = delete.where(api_keys.c.origin == origin)
         return await db.execute(query)
 
     @staticmethod
@@ -181,3 +182,10 @@ class APIKey:
         query = sqlalchemy.select([api_keys.c.api_key_hash])
         keys = await db.fetch_all(query)
         return {k[0] for k in keys}
+
+    @staticmethod
+    async def get_origin_for_key(db: Database, api_key_hash: str) -> Union[str, None]:
+        query = sqlalchemy.select([api_keys.c.origin, api_keys.c.api_key_hash])
+        query = query.where(api_keys.c.api_key_hash == api_key_hash)
+        origin = await db.fetch_one(query)
+        return origin[0] if origin else None

@@ -119,6 +119,11 @@ class Measurement(BaseModel):
         v = v.replace(tzinfo=timezone.utc)
         return v
 
+    def to_orm(self, origin):
+        _dict = self.dict()
+        _dict["origin"] = origin
+        return _dict
+
     class Config:
         orm_mode = True
 
@@ -163,12 +168,12 @@ class QueryParams:
         return v
 
 
-class Source(BaseModel):
+class Origin(BaseModel):
 
-    source: str = Field(
+    origin: str = Field(
         ...,
-        title="Source",
-        description="Name used to identify the device",
+        title="Origin",
+        description="Name used to identify the origin of measurements",
     )
 
     class Config:

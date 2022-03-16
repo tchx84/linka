@@ -22,7 +22,7 @@ import hashlib
 
 from sqlalchemy import func
 from databases.core import Database
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List, Set, Tuple, Union
 
 from .db import metadata
 
@@ -45,6 +45,12 @@ measurements = sqlalchemy.Table(
     sqlalchemy.Column("co2", sqlalchemy.Float, nullable=True),
     sqlalchemy.Column("longitude", sqlalchemy.Float),
     sqlalchemy.Column("latitude", sqlalchemy.Float),
+    sqlalchemy.Column(
+        "provider_id",
+        sqlalchemy.Integer,
+        sqlalchemy.ForeignKey("providers.id"),
+        nullable=True,
+    ),
 )
 
 providers = sqlalchemy.Table(
@@ -181,3 +187,10 @@ class Provider:
         query = sqlalchemy.select([providers.c.api_key_hash])
         keys = await db.fetch_all(query)
         return {k[0] for k in keys}
+
+    @staticmethod
+    async def get_provider_for_key(db: Database, api_key_hash: str) -> Union[str, None]:
+        query = sqlalchemy.select([providers.c.id, providers.c.api_key_hash])
+        query = query.where(providers.c.api_key_hash == api_key_hash)
+        provider = await db.fetch_one(query)
+        return provider[0] if provider else None

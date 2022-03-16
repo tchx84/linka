@@ -51,7 +51,7 @@ api_keys = sqlalchemy.Table(
     "api_keys",
     metadata,
     sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
-    sqlalchemy.Column("source", sqlalchemy.String, nullable=False),
+    sqlalchemy.Column("provider", sqlalchemy.String, nullable=False),
     sqlalchemy.Column("api_key_hash", sqlalchemy.String(length=65), nullable=False),
 )
 
@@ -148,32 +148,32 @@ class APIKey:
         await db.execute(insert, api_key)
 
     @staticmethod
-    async def create_new_key(db: Database, source: str) -> str:
+    async def create_new_key(db: Database, provider: str) -> str:
         raw_api_key = uuid.uuid4().hex
         api_key_hash = hashlib.sha256(raw_api_key.encode("utf-8")).hexdigest()
-        api_key = {"source": source, "api_key_hash": api_key_hash}
+        api_key = {"provider": provider, "api_key_hash": api_key_hash}
         await APIKey.store(db, api_key)
         return raw_api_key
 
     @staticmethod
-    async def get_sources(db: Database) -> List[Tuple[str, int]]:
+    async def get_providers(db: Database) -> List[Tuple[str, int]]:
         query = sqlalchemy.select(
-            [api_keys.c.source, sqlalchemy.func.count(api_keys.c.source)]
-        ).group_by(api_keys.c.source)
+            [api_keys.c.provider, sqlalchemy.func.count(api_keys.c.provider)]
+        ).group_by(api_keys.c.provider)
         return await db.fetch_all(query)
 
     @staticmethod
-    async def revoke_key(db: Database, source: str, raw_api_key: str) -> bool:
+    async def revoke_key(db: Database, provider: str, raw_api_key: str) -> bool:
         api_key_hash = hashlib.sha256(raw_api_key.encode("utf-8")).hexdigest()
         delete = api_keys.delete()
-        query = delete.where(api_keys.c.source == source)
+        query = delete.where(api_keys.c.provider == provider)
         query = query.where(api_keys.c.api_key_hash == api_key_hash)
         return await db.execute(query)
 
     @staticmethod
-    async def revoke_all_keys(db: Database, source: str) -> bool:
+    async def revoke_all_keys(db: Database, provider: str) -> bool:
         delete = api_keys.delete()
-        query = delete.where(api_keys.c.source == source)
+        query = delete.where(api_keys.c.provider == provider)
         return await db.execute(query)
 
     @staticmethod

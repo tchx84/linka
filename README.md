@@ -17,8 +17,6 @@ $ pip install -r requirements.txt
 $ export LINKA_MASTER_KEY=""
 $ export DATABASE_URL=sqlite:///./default.db
 $ alembic upgrade head
-$ ./linka-cli api-keys create tchx84
-Your new API key is: f710b83cee5f43d2b73cbec810dc842c (use the new generated API key)
 ```
 
 ## Run

@@ -67,9 +67,9 @@ async def delete_provider(provider: str, key: APIKey = Depends(validate_master_k
 
 @app.post("/api/v1/measurements")
 async def post(
-    measurements: List[schemas.Measurement], key: APIKey = Depends(validate_api_key)
+    measurements: List[schemas.Measurement], provider: str = Depends(validate_api_key)
 ):
-    await models.Measurement.store(db, [m.dict() for m in measurements])
+    await models.Measurement.store(db, [m.to_orm(provider) for m in measurements])
 
 
 @app.get("/api/v1/measurements", response_model=List[schemas.Measurement])

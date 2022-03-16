@@ -119,6 +119,11 @@ class Measurement(BaseModel):
         v = v.replace(tzinfo=timezone.utc)
         return v
 
+    def to_orm(self, provider):
+        _dict = self.dict()
+        _dict["provider"] = provider
+        return _dict
+
     class Config:
         orm_mode = True
 

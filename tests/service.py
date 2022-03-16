@@ -140,7 +140,7 @@ status = {
 
 MASTER_KEY = "EaDEFOuNiscENyok"
 master_headers = {"X-API-Key": MASTER_KEY}
-source = {"source": "test"}
+provider = {"provider": "test"}
 
 
 def setup_module():
@@ -238,25 +238,25 @@ def test_enforce_utc():
     assert original == past
 
 
-def test_create_source():
-    response = client.post("/api/v1/sources", json=source, headers=master_headers)
+def test_create_provider():
+    response = client.post("/api/v1/providers", json=provider, headers=master_headers)
 
     assert response.status_code == 200
 
 
-def test_list_sources():
-    response = client.get("/api/v1/sources", headers=master_headers)
+def test_list_providers():
+    response = client.get("/api/v1/providers", headers=master_headers)
 
     assert response.status_code == 200
-    assert response.json() == [source]
+    assert response.json() == [provider]
 
 
-def test_delete_source():
-    response = client.delete("/api/v1/sources/test", headers=master_headers)
+def test_delete_provider():
+    response = client.delete("/api/v1/providers/test", headers=master_headers)
 
     assert response.status_code == 200
 
-    response = client.get("/api/v1/sources", headers=master_headers)
+    response = client.get("/api/v1/providers", headers=master_headers)
 
     assert response.status_code == 200
     assert response.json() == []

@@ -45,22 +45,22 @@ async def shutdown():
     await db.disconnect()
 
 
-@app.post("/api/v1/sources", response_model=schemas.APIKey)
-async def create_source(
-    source: schemas.Source, key: APIKey = Depends(validate_master_key)
+@app.post("/api/v1/providers", response_model=schemas.APIKey)
+async def create_provider(
+    provider: schemas.Provider, key: APIKey = Depends(validate_master_key)
 ):
-    key = await models.APIKey.create_new_key(db, source.source)
+    key = await models.APIKey.create_new_key(db, provider.provider)
     return schemas.APIKey(key=key)
 
 
-@app.get("/api/v1/sources")
-async def list_sources(key: APIKey = Depends(validate_master_key)):
-    return [schemas.Source.from_orm(s) for s in await models.APIKey.get_sources(db)]
+@app.get("/api/v1/providers")
+async def list_providers(key: APIKey = Depends(validate_master_key)):
+    return [schemas.Provider.from_orm(s) for s in await models.APIKey.get_providers(db)]
 
 
-@app.delete("/api/v1/sources/{source}")
-async def delete_source(source: str, key: APIKey = Depends(validate_master_key)):
-    return await models.APIKey.revoke_all_keys(db, source)
+@app.delete("/api/v1/providers/{provider}")
+async def delete_provider(provider: str, key: APIKey = Depends(validate_master_key)):
+    return await models.APIKey.revoke_all_keys(db, provider)
 
 
 @app.post("/api/v1/measurements")

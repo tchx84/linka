@@ -163,12 +163,12 @@ class QueryParams:
         return v
 
 
-class Source(BaseModel):
+class Provider(BaseModel):
 
-    source: str = Field(
+    provider: str = Field(
         ...,
-        title="Source",
-        description="Name used to identify the device",
+        title="Provider",
+        description="Name used to identify the measurements provider",
     )
 
     class Config:

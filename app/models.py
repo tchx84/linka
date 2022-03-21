@@ -47,8 +47,8 @@ measurements = sqlalchemy.Table(
     sqlalchemy.Column("latitude", sqlalchemy.Float),
 )
 
-api_keys = sqlalchemy.Table(
-    "api_keys",
+providers = sqlalchemy.Table(
+    "providers",
     metadata,
     sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
     sqlalchemy.Column("provider", sqlalchemy.String, nullable=False),
@@ -141,10 +141,10 @@ class Measurement:
         return await db.fetch_all(select)
 
 
-class APIKey:
+class Provider:
     @staticmethod
     async def store(db: Database, api_key: Dict) -> None:
-        insert = api_keys.insert()
+        insert = providers.insert()
         await db.execute(insert, api_key)
 
     @staticmethod
@@ -152,32 +152,32 @@ class APIKey:
         raw_api_key = uuid.uuid4().hex
         api_key_hash = hashlib.sha256(raw_api_key.encode("utf-8")).hexdigest()
         api_key = {"provider": provider, "api_key_hash": api_key_hash}
-        await APIKey.store(db, api_key)
+        await Provider.store(db, api_key)
         return raw_api_key
 
     @staticmethod
     async def get_providers(db: Database) -> List[Tuple[str, int]]:
         query = sqlalchemy.select(
-            [api_keys.c.provider, sqlalchemy.func.count(api_keys.c.provider)]
-        ).group_by(api_keys.c.provider)
+            [providers.c.provider, sqlalchemy.func.count(providers.c.provider)]
+        ).group_by(providers.c.provider)
         return await db.fetch_all(query)
 
     @staticmethod
     async def revoke_key(db: Database, provider: str, raw_api_key: str) -> bool:
         api_key_hash = hashlib.sha256(raw_api_key.encode("utf-8")).hexdigest()
-        delete = api_keys.delete()
-        query = delete.where(api_keys.c.provider == provider)
-        query = query.where(api_keys.c.api_key_hash == api_key_hash)
+        delete = providers.delete()
+        query = delete.where(providers.c.provider == provider)
+        query = query.where(providers.c.api_key_hash == api_key_hash)
         return await db.execute(query)
 
     @staticmethod
     async def revoke_all_keys(db: Database, provider: str) -> bool:
-        delete = api_keys.delete()
-        query = delete.where(api_keys.c.provider == provider)
+        delete = providers.delete()
+        query = delete.where(providers.c.provider == provider)
         return await db.execute(query)
 
     @staticmethod
     async def get_all_keys(db: Database) -> Set[str]:
-        query = sqlalchemy.select([api_keys.c.api_key_hash])
+        query = sqlalchemy.select([providers.c.api_key_hash])
         keys = await db.fetch_all(query)
         return {k[0] for k in keys}

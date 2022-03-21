@@ -156,7 +156,7 @@ def setup_module():
     from app.db import db
     from app import models
 
-    headers["X-API-Key"] = asyncio.run(models.APIKey.create_new_key(db, "test"))
+    headers["X-API-Key"] = asyncio.run(models.Provider.create_new_key(db, "test"))
     from app import service
 
     client = TestClient(service.app)

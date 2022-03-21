@@ -36,7 +36,7 @@ async def validate_api_key(raw_api_key: APIKey = Security(query)):
         raise InvalidAPIKey
 
     key = hashlib.sha256(raw_api_key.encode("utf-8")).hexdigest()
-    keys = await models.APIKey.get_all_keys(db)
+    keys = await models.Provider.get_all_keys(db)
     if key not in keys:
         raise InvalidAPIKey
 

@@ -240,7 +240,7 @@ class Report(BaseModel):
         description="Target latitude coordinate",
     )
     quality: Quality = Field(
-        ...,
+        None,
         title="Quality",
         description="Quality according to AQI",
     )

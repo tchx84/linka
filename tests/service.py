@@ -88,6 +88,22 @@ aqi = [
         "latitude": -25.194156,
         "quality": {"category": "Moderate", "index": 81},
     },
+    {
+        "source": "nullable",
+        "sensor": "nullable",
+        "description": "nullable",
+        "longitude": -57.521369,
+        "latitude": -25.194156,
+        "quality": None,
+    },
+    {
+        "source": "test",
+        "sensor": "test",
+        "description": None,
+        "longitude": -57.521369,
+        "latitude": -25.194156,
+        "quality": {"category": "Good", "index": 0},
+    },
 ]
 stats = [
     {
@@ -265,7 +281,6 @@ def test_delete_provider():
 def test_aqi():
     query = {
         "start": "1984-04-24T00:00:00",
-        "source": "aqi",
     }
 
     response = client.get(f"/api/v1/aqi?{urlencode(query)}")

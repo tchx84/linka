@@ -51,6 +51,18 @@ CATEGORIES = [
 class AQI:
     @staticmethod
     def get_quality(source):
+        report = schemas.Report(
+            sensor=source.sensor,
+            source=source.source,
+            description=source.description,
+            latitude=source.latitude,
+            longitude=source.longitude,
+            quality=None,
+        )
+
+        if source.pm2dot5_average is None:
+            return report
+
         concentration = next(
             c for c in CONCENTRATIONS if c[0] <= source.pm2dot5_average <= c[1]
         )
@@ -66,15 +78,9 @@ class AQI:
         category_index = BREAKPOINTS.index(index_breakpoint)
         category = CATEGORIES[category_index]
 
-        quality = schemas.Quality(index=index, category=category)
-        return schemas.Report(
-            sensor=source.sensor,
-            source=source.source,
-            description=source.description,
-            latitude=source.latitude,
-            longitude=source.longitude,
-            quality=quality,
-        )
+        report.quality = schemas.Quality(index=index, category=category)
+
+        return report
 
     @staticmethod
     async def generate(db, query):

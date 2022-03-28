@@ -79,7 +79,7 @@ class AQI:
     @staticmethod
     async def generate(db, query):
         sources = await Measurement.stats(db, query)
-        return [AQI.get_quality(s) for s in sources]
+        return [AQI.get_quality(s) for s in sources if s.pm2dot5_average is not None]
 
 
 class Stats:

@@ -14,7 +14,7 @@ $ pip install -r requirements.txt
 ## Setup
 
 ```
-$ export LINKA_MASTER_KEY=""
+$ export LINKA_MASTER_KEY="YOUR_MADE_UP_AND_SECURE_API_KEY"
 $ export DATABASE_URL=sqlite:///./default.db
 $ alembic upgrade head
 ```
@@ -29,6 +29,17 @@ $ gunicorn --bind 0.0.0.0:5000 --graceful-timeout 300 --timeout 300 --worker-cla
 ## Docs
 
 Run the service and check http://localhost:5000/docs
+Use the same `LINKA_MASTER_KEY` value for `X-API-Key` value of Authorize section 
+
+You can also check if everything is working fine with curl
+
+```
+curl --request GET \
+  --url http://localhost:5000/api/v1/providers \
+  --header 'X-API-Key: YOUR_MADE_UP_AND_SECURE_API_KEY'
+```
+
+At first should return a http status 200 with an empty array `[]`
 
 # Disclaimer
 

@@ -1,0 +1,18 @@
+version: "3.7"
+services:
+    postgres:
+        image: postgres
+        env_file: defaults.env
+    
+    web:
+      build: 
+        context: .
+        dockerfile: docker/Dockerfile
+      entrypoint: ./qa.sh 
+      env_file: defaults.env
+
+      ports:
+        - 5000:5000
+      
+    
+    

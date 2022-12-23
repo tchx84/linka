@@ -4,7 +4,7 @@ FROM python:3.8-alpine AS base
 LABEL maintainer="Pablo Santa Cruz <pablo@roshka.com.py>"
 
 # We need gcc to build some python libraries
-RUN apk add build-base
+RUN apk add build-base bash
 
 WORKDIR /app
 
@@ -25,11 +25,11 @@ ENV     CONTAINER_PORT=5000 \
         TIMEOUT=300 \
         WORKER_CONNECTIONS=10 \
         WORKERS=3 \
-        DATABASE_URL=sqlite:///./default.db \
+        # DATABASE_URL=sqlite:///./default.db \
         LINKA_MASTER_KEY=""
 
-EXPOSE ${CONTAINER_PORT}
+# EXPOSE ${CONTAINER_PORT}
 
 # run gunicorn
-CMD ["sh", "./startup.sh"]
+# CMD ["sh", "./startup.sh"]
 

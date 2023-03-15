@@ -9,5 +9,5 @@ black==23.1.0
 aiosqlite==0.18.0
 databases==0.7.0
 SQLAlchemy==1.4.46
-alembic==1.6.5
+alembic==1.10.2
 geopy==2.1.0

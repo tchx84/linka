@@ -22,7 +22,6 @@ from fastapi import Query
 
 
 class Measurement(BaseModel):
-
     sensor: str = Field(
         ...,
         title="Sensor",
@@ -130,7 +129,6 @@ class Measurement(BaseModel):
 
 @dataclass
 class QueryParams:
-
     source: str = Query(
         None,
         title="Source",
@@ -169,7 +167,6 @@ class QueryParams:
 
 
 class Provider(BaseModel):
-
     provider: str = Field(
         ...,
         title="Provider",
@@ -181,7 +178,6 @@ class Provider(BaseModel):
 
 
 class APIKey(BaseModel):
-
     key: str = Field(
         ...,
         title="API key",
@@ -199,7 +195,6 @@ class Category(str, Enum):
 
 
 class Quality(BaseModel):
-
     category: Category = Field(
         ...,
         title="Category",
@@ -213,7 +208,6 @@ class Quality(BaseModel):
 
 
 class Report(BaseModel):
-
     sensor: str = Field(
         ...,
         title="Sensor",
@@ -253,7 +247,6 @@ class BasicStats(BaseModel):
 
 
 class ReportStats(BaseModel):
-
     sensor: str = Field(
         ...,
         title="Sensor",
@@ -304,7 +297,6 @@ class Status(str, Enum):
 
 
 class ServiceStatus(BaseModel):
-
     service: Status = Field(
         Status.UP,
         title="Service",

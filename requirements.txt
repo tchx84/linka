@@ -9,5 +9,7 @@ black==23.1.0
 aiosqlite==0.18.0
 databases==0.7.0
 SQLAlchemy==1.4.46
+asyncpg==0.27.0
+psycopg2-binary==2.9.5
 alembic==1.10.2
 geopy==2.3.0

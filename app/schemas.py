@@ -115,7 +115,8 @@ class Measurement(BaseModel):
     def must_be_utc(cls, v):
         v = v if v.tzinfo else v.replace(tzinfo=timezone.utc)
         v = datetime.utcfromtimestamp(v.timestamp())
-        v = v.replace(tzinfo=timezone.utc)
+        # XXX remove TZ since we're assuming UTC anyways, arrgg...
+        v = v.replace(tzinfo=None)
         return v
 
     def to_orm(self, provider):

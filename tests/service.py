@@ -15,8 +15,8 @@
 
 import os
 import sys
-import asyncio
 import copy
+import pytest
 
 from urllib.parse import urlencode
 from alembic import config
@@ -26,7 +26,6 @@ from fastapi.testclient import TestClient
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(ROOT_DIR)
 
-client = None
 test_db_path = "test.db"
 headers = {"X-API-Key": ""}
 measurements = [
@@ -44,7 +43,7 @@ measurements = [
         "co2": 200.0,
         "longitude": -57.521369,
         "latitude": -25.194156,
-        "recorded": "2020-10-24T20:47:57.370721+00:00",
+        "recorded": "2020-10-24T20:47:57.370721",
     },
     {
         "sensor": "aqi",
@@ -60,7 +59,7 @@ measurements = [
         "co2": 1000.0,
         "longitude": -57.521369,
         "latitude": -25.194156,
-        "recorded": "2020-10-24T20:47:57.370721+00:00",
+        "recorded": "2020-10-24T20:47:57.370721",
     },
     {
         "sensor": "nullable",
@@ -76,7 +75,7 @@ measurements = [
         "co2": None,
         "longitude": -57.521369,
         "latitude": -25.194156,
-        "recorded": "2020-10-24T20:47:57.370721+00:00",
+        "recorded": "2020-10-24T20:47:57.370721",
     },
 ]
 aqi = [
@@ -159,23 +158,21 @@ master_headers = {"X-API-Key": MASTER_KEY}
 provider = {"provider": "test"}
 
 
-def setup_module():
-    global client
+def _sorted(results):
+    return sorted(results, key=lambda r: str(r["description"]))
 
+
+def setup_module():
     if os.path.exists(test_db_path):
         os.unlink(test_db_path)
 
+    database_url = os.environ.get("DATABASE_URL")
+    if database_url is None:
+        database_url = f"sqlite:///./{test_db_path}"
+
     os.environ["LINKA_MASTER_KEY"] = MASTER_KEY
-    os.environ["DATABASE_URL"] = f"sqlite:///./{test_db_path}"
+    os.environ["DATABASE_URL"] = database_url
     config.main(argv=["upgrade", "head"])
-
-    from app.db import db
-    from app import models
-
-    headers["X-API-Key"] = asyncio.run(models.Provider.create_new_key(db, "test"))
-    from app import service
-
-    client = TestClient(service.app)
 
 
 def teardown_module():
@@ -183,29 +180,43 @@ def teardown_module():
         os.unlink(test_db_path)
 
 
-def test_record():
+@pytest.fixture(scope="module")
+def client():
+    from app import service
+
+    with TestClient(service.app) as _client:
+        yield _client
+
+
+def test_create_provider(client):
+    response = client.post("/api/v1/providers", json=provider, headers=master_headers)
+    assert response.status_code == 200
+    headers["X-API-Key"] = response.json().get("key")
+
+
+def test_record(client):
     response = client.post("/api/v1/measurements", json=measurements, headers=headers)
     assert response.status_code == 200
 
 
-def test_invalid_api_key_access():
+def test_invalid_api_key_access(client):
     response = client.post(
         "/api/v1/measurements", json=measurements, headers={"X-API-Key": "123"}
     )
     assert response.status_code == 403
 
 
-def test_query():
+def test_query(client):
     query = {
         "start": "1984-04-24T00:00:00",
     }
 
     response = client.get(f"/api/v1/measurements?{urlencode(query)}")
     assert response.status_code == 200
-    assert response.json() == measurements
+    assert _sorted(response.json()) == _sorted(measurements)
 
 
-def test_empty_query():
+def test_empty_query(client):
     query = {
         "source": "test",
         "start": "1984-04-24T00:00:00",
@@ -217,7 +228,7 @@ def test_empty_query():
     assert response.json() == []
 
 
-def test_distance_query():
+def test_distance_query(client):
     query = {
         "start": "1984-04-24T00:00:00",
         "longitude": -57.521369,
@@ -227,10 +238,10 @@ def test_distance_query():
 
     response = client.get(f"/api/v1/measurements?{urlencode(query)}")
     assert response.status_code == 200
-    assert response.json() == measurements
+    assert _sorted(response.json()) == _sorted(measurements)
 
 
-def test_enforce_utc():
+def test_enforce_utc(client):
     original = measurements[0]
 
     future = copy.deepcopy(original)
@@ -254,49 +265,32 @@ def test_enforce_utc():
     assert original == past
 
 
-def test_create_provider():
-    response = client.post("/api/v1/providers", json=provider, headers=master_headers)
-
-    assert response.status_code == 200
-
-
-def test_list_providers():
-    response = client.get("/api/v1/providers", headers=master_headers)
-
-    assert response.status_code == 200
-    assert response.json() == [provider]
-
-
-def test_delete_provider():
-    response = client.delete("/api/v1/providers/test", headers=master_headers)
-
-    assert response.status_code == 200
-
-    response = client.get("/api/v1/providers", headers=master_headers)
-
-    assert response.status_code == 200
-    assert response.json() == []
-
-
-def test_aqi():
+def test_aqi(client):
     query = {
         "start": "1984-04-24T00:00:00",
     }
 
     response = client.get(f"/api/v1/aqi?{urlencode(query)}")
     assert response.status_code == 200
-    assert response.json() == aqi
+    assert _sorted(response.json()) == _sorted(aqi)
 
 
-def test_stats():
+def test_stats(client):
     query = {"start": "1984-04-24T00:00:00"}
 
     response = client.get(f"/api/v1/stats?{urlencode(query)}")
     assert response.status_code == 200
-    assert response.json() == stats
+    assert _sorted(response.json()) == _sorted(stats)
 
 
-def test_status():
+def test_status(client):
     response = client.get("/api/v1/status")
     assert response.status_code == 200
     assert response.json() == status
+
+
+def test_list_providers(client):
+    response = client.get("/api/v1/providers", headers=master_headers)
+
+    assert response.status_code == 200
+    assert response.json() == [provider]

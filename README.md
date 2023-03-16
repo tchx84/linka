@@ -15,7 +15,7 @@ $ pip install -r requirements.txt
 
 ```
 $ export LINKA_MASTER_KEY="YOUR_MADE_UP_AND_SECURE_API_KEY"
-$ export DATABASE_URL=sqlite:///./default.db
+$ export DATABASE_URL=postgresql://USER:PASSWORD@localhost:5432/linka
 $ alembic upgrade head
 ```
 

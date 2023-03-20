@@ -31,7 +31,7 @@ measurements = sqlalchemy.Table(
     "measurements",
     metadata,
     sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
-    sqlalchemy.Column("recorded", sqlalchemy.DateTime),
+    sqlalchemy.Column("recorded", sqlalchemy.DateTime(timezone=True)),
     sqlalchemy.Column("sensor", sqlalchemy.String),
     sqlalchemy.Column("source", sqlalchemy.String),
     sqlalchemy.Column("version", sqlalchemy.String, nullable=True),

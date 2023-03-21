@@ -48,7 +48,7 @@ measurements = sqlalchemy.Table(
     sqlalchemy.Column(
         "provider_id",
         sqlalchemy.Integer,
-        sqlalchemy.ForeignKey("providers.id"),
+        sqlalchemy.ForeignKey("providers.id", ondelete="CASCADE"),
         nullable=True,
     ),
 )

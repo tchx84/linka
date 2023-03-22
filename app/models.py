@@ -135,6 +135,7 @@ class Measurement:
             measurements.c.latitude,
             measurements.c.longitude,
         )
+        select = select.order_by(sqlalchemy.asc(measurements.c.description))
         select = Measurement.filter(select, query)
 
         return await db.fetch_all(select)
@@ -142,6 +143,7 @@ class Measurement:
     @staticmethod
     async def retrieve(db, query):
         select = measurements.select()
+        select = select.order_by(sqlalchemy.asc(measurements.c.description))
         select = Measurement.filter(select, query)
 
         return await db.fetch_all(select)

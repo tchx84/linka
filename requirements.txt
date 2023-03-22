@@ -11,3 +11,4 @@ databases==0.7.0
 SQLAlchemy==1.4.46
 alembic==1.10.2
 geopy==2.3.0
+pytest-dependency==0.5.1

@@ -16,6 +16,7 @@
 import os
 import sys
 import copy
+import pytest
 
 from urllib.parse import urlencode
 from alembic import config
@@ -178,12 +179,14 @@ def teardown_module():
         os.unlink(test_db_path)
 
 
+@pytest.mark.dependency()
 def test_create_provider():
     response = client.post("/api/v1/providers", json=provider, headers=master_headers)
     assert response.status_code == 200
     headers["X-API-Key"] = response.json().get("key")
 
 
+@pytest.mark.dependency(depends=["test_create_provider"])
 def test_record():
     response = client.post("/api/v1/measurements", json=measurements, headers=headers)
     assert response.status_code == 200
@@ -196,6 +199,7 @@ def test_invalid_api_key_access():
     assert response.status_code == 403
 
 
+@pytest.mark.dependency(depends=["test_record"])
 def test_query():
     query = {
         "start": "1984-04-24T00:00:00",
@@ -206,6 +210,7 @@ def test_query():
     assert response.json() == measurements
 
 
+@pytest.mark.dependency(depends=["test_record"])
 def test_empty_query():
     query = {
         "source": "test",
@@ -218,6 +223,7 @@ def test_empty_query():
     assert response.json() == []
 
 
+@pytest.mark.dependency(depends=["test_record"])
 def test_distance_query():
     query = {
         "start": "1984-04-24T00:00:00",
@@ -255,6 +261,7 @@ def test_enforce_utc():
     assert original == past
 
 
+@pytest.mark.dependency(depends=["test_create_provider"])
 def test_list_providers():
     response = client.get("/api/v1/providers", headers=master_headers)
 
@@ -262,6 +269,7 @@ def test_list_providers():
     assert response.json() == [provider]
 
 
+@pytest.mark.dependency(depends=["test_create_provider"])
 def test_delete_provider():
     response = client.delete("/api/v1/providers/test", headers=master_headers)
 
@@ -273,6 +281,7 @@ def test_delete_provider():
     assert response.json() == []
 
 
+@pytest.mark.dependency(depends=["test_record"])
 def test_aqi():
     query = {
         "start": "1984-04-24T00:00:00",
@@ -283,6 +292,7 @@ def test_aqi():
     assert response.json() == aqi
 
 
+@pytest.mark.dependency(depends=["test_record"])
 def test_stats():
     query = {"start": "1984-04-24T00:00:00"}
 

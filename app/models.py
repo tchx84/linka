@@ -168,6 +168,7 @@ class Provider:
         query = sqlalchemy.select(
             [providers.c.provider, sqlalchemy.func.count(providers.c.provider)]
         ).group_by(providers.c.provider)
+        query = query.order_by(sqlalchemy.asc(providers.c.provider))
         return await db.fetch_all(query)
 
     @staticmethod
@@ -187,6 +188,7 @@ class Provider:
     @staticmethod
     async def get_all_keys(db: Database) -> Set[str]:
         query = sqlalchemy.select([providers.c.api_key_hash])
+        query = query.order_by(sqlalchemy.asc(providers.c.provider))
         keys = await db.fetch_all(query)
         return {k[0] for k in keys}
 

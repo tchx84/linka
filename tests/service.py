@@ -15,7 +15,6 @@
 
 import os
 import sys
-import asyncio
 import copy
 
 from urllib.parse import urlencode
@@ -169,10 +168,6 @@ def setup_module():
     os.environ["DATABASE_URL"] = f"sqlite:///./{test_db_path}"
     config.main(argv=["upgrade", "head"])
 
-    from app.db import db
-    from app import models
-
-    headers["X-API-Key"] = asyncio.run(models.Provider.create_new_key(db, "test"))
     from app import service
 
     client = TestClient(service.app)
@@ -181,6 +176,12 @@ def setup_module():
 def teardown_module():
     if os.path.exists(test_db_path):
         os.unlink(test_db_path)
+
+
+def test_create_provider():
+    response = client.post("/api/v1/providers", json=provider, headers=master_headers)
+    assert response.status_code == 200
+    headers["X-API-Key"] = response.json().get("key")
 
 
 def test_record():
@@ -252,12 +253,6 @@ def test_enforce_utc():
     assert original == future
     assert original == present
     assert original == past
-
-
-def test_create_provider():
-    response = client.post("/api/v1/providers", json=provider, headers=master_headers)
-
-    assert response.status_code == 200
 
 
 def test_list_providers():

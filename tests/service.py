@@ -26,7 +26,6 @@ from fastapi.testclient import TestClient
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(ROOT_DIR)
 
-client = None
 test_db_path = "test.db"
 headers = {"X-API-Key": ""}
 measurements = [
@@ -160,18 +159,16 @@ provider = {"provider": "test"}
 
 
 def setup_module():
-    global client
-
     if os.path.exists(test_db_path):
         os.unlink(test_db_path)
 
+    database_url = os.environ.get("DATABASE_URL")
+    if database_url is None:
+        database_url = f"sqlite:///./{test_db_path}"
+
     os.environ["LINKA_MASTER_KEY"] = MASTER_KEY
-    os.environ["DATABASE_URL"] = f"sqlite:///./{test_db_path}"
+    os.environ["DATABASE_URL"] = database_url
     config.main(argv=["upgrade", "head"])
-
-    from app import service
-
-    client = TestClient(service.app)
 
 
 def teardown_module():
@@ -179,28 +176,35 @@ def teardown_module():
         os.unlink(test_db_path)
 
 
+@pytest.fixture(scope="module")
+def client():
+    from app import service
+
+    with TestClient(service.app) as _client:
+        yield _client
+
+
 @pytest.mark.dependency()
-def test_create_provider():
+def test_create_provider(client):
     response = client.post("/api/v1/providers", json=provider, headers=master_headers)
     assert response.status_code == 200
     headers["X-API-Key"] = response.json().get("key")
 
 
 @pytest.mark.dependency(depends=["test_create_provider"])
-def test_list_providers():
+def test_list_providers(client):
     response = client.get("/api/v1/providers", headers=master_headers)
-
     assert response.status_code == 200
     assert response.json() == [provider]
 
 
 @pytest.mark.dependency(depends=["test_create_provider"])
-def test_record():
+def test_record(client):
     response = client.post("/api/v1/measurements", json=measurements, headers=headers)
     assert response.status_code == 200
 
 
-def test_invalid_api_key_access():
+def test_invalid_api_key_access(client):
     response = client.post(
         "/api/v1/measurements", json=measurements, headers={"X-API-Key": "123"}
     )
@@ -208,7 +212,7 @@ def test_invalid_api_key_access():
 
 
 @pytest.mark.dependency(depends=["test_record"])
-def test_query():
+def test_query(client):
     query = {
         "start": "1984-04-24T00:00:00",
     }
@@ -219,7 +223,7 @@ def test_query():
 
 
 @pytest.mark.dependency(depends=["test_record"])
-def test_empty_query():
+def test_empty_query(client):
     query = {
         "source": "test",
         "start": "1984-04-24T00:00:00",
@@ -232,7 +236,7 @@ def test_empty_query():
 
 
 @pytest.mark.dependency(depends=["test_record"])
-def test_distance_query():
+def test_distance_query(client):
     query = {
         "start": "1984-04-24T00:00:00",
         "longitude": -57.521369,
@@ -270,7 +274,7 @@ def test_enforce_utc():
 
 
 @pytest.mark.dependency(depends=["test_record"])
-def test_aqi():
+def test_aqi(client):
     query = {
         "start": "1984-04-24T00:00:00",
     }
@@ -281,7 +285,7 @@ def test_aqi():
 
 
 @pytest.mark.dependency(depends=["test_record"])
-def test_stats():
+def test_stats(client):
     query = {"start": "1984-04-24T00:00:00"}
 
     response = client.get(f"/api/v1/stats?{urlencode(query)}")
@@ -289,7 +293,7 @@ def test_stats():
     assert response.json() == stats
 
 
-def test_status():
+def test_status(client):
     response = client.get("/api/v1/status")
     assert response.status_code == 200
     assert response.json() == status
@@ -304,7 +308,7 @@ def test_status():
         "test_stats",
     ]
 )
-def test_delete_provider():
+def test_delete_provider(client):
     response = client.delete("/api/v1/providers/test", headers=master_headers)
 
     assert response.status_code == 200
@@ -316,7 +320,7 @@ def test_delete_provider():
 
 
 @pytest.mark.dependency(depends=["test_delete_provider"])
-def test_empty_measurements():
+def test_empty_measurements(client):
     query = {
         "start": "1984-04-24T00:00:00",
     }

@@ -5,7 +5,7 @@ LINKA is an open source service to record air quality data from community sensor
 ## Install
 
 ```
-$ sudo dnf install python3-virtualenv python-devel
+$ sudo dnf install python3-virtualenv python-devel libpq-devel
 $ virtualenv env
 $ source ./env/bin/activate
 $ pip install -r requirements.txt
@@ -15,7 +15,7 @@ $ pip install -r requirements.txt
 
 ```
 $ export LINKA_MASTER_KEY="YOUR_MADE_UP_AND_SECURE_API_KEY"
-$ export DATABASE_URL=sqlite:///./default.db
+$ export DATABASE_URL=postgresql://USER:PASSWORD@localhost:5432/linka
 $ alembic upgrade head
 ```
 

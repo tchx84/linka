@@ -187,6 +187,14 @@ def test_create_provider():
 
 
 @pytest.mark.dependency(depends=["test_create_provider"])
+def test_list_providers():
+    response = client.get("/api/v1/providers", headers=master_headers)
+
+    assert response.status_code == 200
+    assert response.json() == [provider]
+
+
+@pytest.mark.dependency(depends=["test_create_provider"])
 def test_record():
     response = client.post("/api/v1/measurements", json=measurements, headers=headers)
     assert response.status_code == 200
@@ -261,26 +269,6 @@ def test_enforce_utc():
     assert original == past
 
 
-@pytest.mark.dependency(depends=["test_create_provider"])
-def test_list_providers():
-    response = client.get("/api/v1/providers", headers=master_headers)
-
-    assert response.status_code == 200
-    assert response.json() == [provider]
-
-
-@pytest.mark.dependency(depends=["test_create_provider"])
-def test_delete_provider():
-    response = client.delete("/api/v1/providers/test", headers=master_headers)
-
-    assert response.status_code == 200
-
-    response = client.get("/api/v1/providers", headers=master_headers)
-
-    assert response.status_code == 200
-    assert response.json() == []
-
-
 @pytest.mark.dependency(depends=["test_record"])
 def test_aqi():
     query = {
@@ -305,3 +293,34 @@ def test_status():
     response = client.get("/api/v1/status")
     assert response.status_code == 200
     assert response.json() == status
+
+
+@pytest.mark.dependency(
+    depends=[
+        "test_query",
+        "test_empty_query",
+        "test_distance_query",
+        "test_aqi",
+        "test_stats",
+    ]
+)
+def test_delete_provider():
+    response = client.delete("/api/v1/providers/test", headers=master_headers)
+
+    assert response.status_code == 200
+
+    response = client.get("/api/v1/providers", headers=master_headers)
+
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+@pytest.mark.dependency(depends=["test_delete_provider"])
+def test_empty_measurements():
+    query = {
+        "start": "1984-04-24T00:00:00",
+    }
+
+    response = client.get(f"/api/v1/measurements?{urlencode(query)}")
+    assert response.status_code == 200
+    assert response.json() == []

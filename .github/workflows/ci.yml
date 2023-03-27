@@ -11,6 +11,23 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres
+
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: postgres
+
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
     steps:
       # Checkout the repository
       - uses: actions/checkout@v2
@@ -27,3 +44,5 @@ jobs:
 
       - name: Run the QA script
         run: ./qa.sh
+        env:
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"

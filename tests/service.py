@@ -31,22 +31,6 @@ test_db_path = "test.db"
 headers = {"X-API-Key": ""}
 measurements = [
     {
-        "sensor": "test",
-        "source": "test",
-        "description": None,
-        "version": None,
-        "pm1dot0": 0.0,
-        "pm2dot5": 0.0,
-        "pm10": 0.0,
-        "humidity": 1.0,
-        "temperature": -89.2,
-        "pressure": 870.0,
-        "co2": 200.0,
-        "longitude": -57.521369,
-        "latitude": -25.194156,
-        "recorded": "2020-10-24T20:47:57.370721+00:00",
-    },
-    {
         "sensor": "aqi",
         "source": "aqi",
         "description": "aqi",
@@ -78,16 +62,24 @@ measurements = [
         "latitude": -25.194156,
         "recorded": "2020-10-24T20:47:57.370721+00:00",
     },
-]
-aqi = [
     {
-        "source": "test",
         "sensor": "test",
+        "source": "test",
         "description": None,
+        "version": None,
+        "pm1dot0": 0.0,
+        "pm2dot5": 0.0,
+        "pm10": 0.0,
+        "humidity": 1.0,
+        "temperature": -89.2,
+        "pressure": 870.0,
+        "co2": 200.0,
         "longitude": -57.521369,
         "latitude": -25.194156,
-        "quality": {"category": "Good", "index": 0},
+        "recorded": "2020-10-24T20:47:57.370721+00:00",
     },
+]
+aqi = [
     {
         "source": "aqi",
         "sensor": "aqi",
@@ -104,22 +96,16 @@ aqi = [
         "latitude": -25.194156,
         "quality": None,
     },
-]
-stats = [
     {
-        "sensor": "test",
         "source": "test",
+        "sensor": "test",
         "description": None,
         "longitude": -57.521369,
         "latitude": -25.194156,
-        "pm10": {"average": 0.0, "maximum": 0.0, "minimum": 0.0},
-        "pm1dot0": {"average": 0.0, "maximum": 0.0, "minimum": 0.0},
-        "pm2dot5": {"average": 0.0, "maximum": 0.0, "minimum": 0.0},
-        "humidity": {"average": 1.0, "maximum": 1.0, "minimum": 1.0},
-        "pressure": {"average": 870.0, "maximum": 870.0, "minimum": 870.0},
-        "co2": {"average": 200.0, "maximum": 200.0, "minimum": 200.0},
-        "temperature": {"average": -89.2, "maximum": -89.2, "minimum": -89.2},
+        "quality": {"category": "Good", "index": 0},
     },
+]
+stats = [
     {
         "source": "aqi",
         "sensor": "aqi",
@@ -147,6 +133,20 @@ stats = [
         "pressure": {"average": None, "maximum": None, "minimum": None},
         "co2": {"average": None, "maximum": None, "minimum": None},
         "temperature": {"average": None, "maximum": None, "minimum": None},
+    },
+    {
+        "sensor": "test",
+        "source": "test",
+        "description": None,
+        "longitude": -57.521369,
+        "latitude": -25.194156,
+        "pm10": {"average": 0.0, "maximum": 0.0, "minimum": 0.0},
+        "pm1dot0": {"average": 0.0, "maximum": 0.0, "minimum": 0.0},
+        "pm2dot5": {"average": 0.0, "maximum": 0.0, "minimum": 0.0},
+        "humidity": {"average": 1.0, "maximum": 1.0, "minimum": 1.0},
+        "pressure": {"average": 870.0, "maximum": 870.0, "minimum": 870.0},
+        "co2": {"average": 200.0, "maximum": 200.0, "minimum": 200.0},
+        "temperature": {"average": -89.2, "maximum": -89.2, "minimum": -89.2},
     },
 ]
 status = {

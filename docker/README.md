@@ -24,17 +24,19 @@ This are development instructions.
 
 --- 
 
-For a production or persistent environment you should setup a custom `IMAGE_NAME`,  persistent docker volume, remote access, etc. 
+For a production or persistent environment you should setup a custom `IMAGE_NAME`, PostgreSQL database, remote access, etc.
 
 Example:
 
-`docker run -d --env-file $ENV_FILE --mount source=rald-data,target=/data -p 5858:5000 -p 5822:22 --name linka-server $IMAGE_NAME`
+`docker run -d --env-file $ENV_FILE -p 5858:5000 -p 5822:22 --name linka-server $IMAGE_NAME`
 
 
 
 `ENV_FILE`
 
 ```
-DATABASE_URL=sqlite:////data/default.db
+DATABASE_URL=postgresql://<USER>:<PASSWORD>@<ADDRESS>:5432/linka
 LINKA_MASTER_KEY=ALGUN_MASTER_KEY
 ```
+
+If you're currently using SQLite, and want to migrate to PostgreSQL, check [this](POSTGRES.md) guide.

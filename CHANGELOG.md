@@ -1,6 +1,6 @@
 # Changelog
 
-## [unreleased]
+## [1.0.0] 2023-04-03
 
 - Fixed default ordering of all provided data by description.
 - Fixed making dates time-zone aware.

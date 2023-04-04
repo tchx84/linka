@@ -24,11 +24,11 @@ This are development instructions.
 
 --- 
 
-For a production or persistent environment you should setup a custom `IMAGE_NAME`, PostgreSQL database, remote access, etc.
+For a production or persistent environment you should setup a custom `IMAGE_NAME`, PostgreSQL database, etc.
 
 Example:
 
-`docker run -d --env-file $ENV_FILE -p 5858:5000 -p 5822:22 --name linka-server $IMAGE_NAME`
+`docker run -d --env-file $ENV_FILE -p 5858:5000 --name linka-server $IMAGE_NAME`
 
 
 

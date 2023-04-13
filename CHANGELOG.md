@@ -1,6 +1,6 @@
 # Changelog
 
-## [unreleased]
+## [1.0.1] 2023-04-13
 
 - Fixed logic hole in AQI calculations.
 

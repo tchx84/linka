@@ -1,5 +1,9 @@
 # Changelog
 
+## [unreleased]
+
+- Changed requests version to 2.31.0 for security.
+
 ## [1.0.1] 2023-04-13
 
 - Fixed logic hole in AQI calculations.

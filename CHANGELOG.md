@@ -1,6 +1,6 @@
 # Changelog
 
-## [unreleased]
+## [1.0.2] 2023-07-19
 
 - Changed requests version to 2.31.0 for security.
 

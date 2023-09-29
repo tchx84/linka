@@ -14,3 +14,4 @@ psycopg2-binary==2.9.5
 alembic==1.10.2
 geopy==2.3.0
 pytest-dependency==0.5.1
+pydantic>=2.4.0 # not directly required, pinned by Snyk to avoid a vulnerability

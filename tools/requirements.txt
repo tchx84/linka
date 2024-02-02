@@ -1,3 +1,4 @@
 pandas==1.2.0
 requests==2.31.0
 matplotlib==3.3.3
+pillow>=10.2.0 # not directly required, pinned by Snyk to avoid a vulnerability

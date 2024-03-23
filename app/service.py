@@ -60,7 +60,11 @@ app = FastAPI(
     version= "1.0.2",
 	docs_url= None,
 	redoc_url= None,
-	redoc_favicon_url=urlIcon
+	redoc_favicon_url=urlIcon,
+    license_info={
+        "name": "AGPL-3.0 license",
+        "identifier": "https://github.com/tchx84/linka/blob/master/COPYING",
+    }
 )
 
 @app.get("/docs", include_in_schema=False)
@@ -90,32 +94,13 @@ async def startup():
 async def shutdown():
     await db.disconnect()
 
-@app.post("/api/v1/providers", response_model=schemas.APIKey, tags=["Requests with apiKey 🔑"])
-async def create_provider(
-    provider: schemas.Provider, key: APIKey = Depends(validate_master_key)
-):
-    key = await models.Provider.create_new_key(db, provider.provider)
-    return schemas.APIKey(key=key)
 
-
-@app.get("/api/v1/providers", tags=["Requests with apiKey 🔑"])
-async def list_providers(key: APIKey = Depends(validate_master_key)):
-    return [
-        schemas.Provider.from_orm(s) for s in await models.Provider.get_providers(db)
-    ]
-
-
-@app.delete("/api/v1/providers/{provider}", tags=["Requests with apiKey 🔑"])
-async def delete_provider(provider: str, key: APIKey = Depends(validate_master_key)):
-    return await models.Provider.revoke_all_keys(db, provider)
-
-
-@app.post("/api/v1/measurements", tags=["Requests with apiKey 🔑"])
+@app.post("/api/v1/measurements", tags=[models.TagsEnum.apiKey])
 async def post(
     measurements: List[schemas.Measurement], provider: str = Depends(validate_api_key)
 ):
     await models.Measurement.store(db, [m.to_orm(provider) for m in measurements])
-@app.get("/api/v1/measurements", response_model=List[schemas.Measurement], tags=["Requests Public 🌎"])
+@app.get("/api/v1/measurements", response_model=List[schemas.Measurement], tags=[models.TagsEnum.public])
 async def get(query: schemas.QueryParams = Depends(schemas.QueryParams)):
     return [
         schemas.Measurement.from_orm(m)
@@ -123,17 +108,17 @@ async def get(query: schemas.QueryParams = Depends(schemas.QueryParams)):
     ]
 
 
-@app.get("/api/v1/aqi", response_model=List[schemas.Report], tags=["Requests Public 🌎"])
+@app.get("/api/v1/aqi", response_model=List[schemas.Report], tags=[models.TagsEnum.public])
 async def aqi(query: schemas.QueryParams = Depends(schemas.QueryParams)):
     return await reports.AQI.generate(db, query)
 
 
-@app.get("/api/v1/stats", response_model=List[schemas.ReportStats], tags=["Requests Public 🌎"])
+@app.get("/api/v1/stats", response_model=List[schemas.ReportStats], tags=[models.TagsEnum.public])
 async def stats(query: schemas.QueryParams = Depends(schemas.QueryParams)):
     return await reports.Stats.generate(db, query)
 
 
-@app.get("/api/v1/status", response_model=schemas.ServiceStatus, tags=["Requests Public 🌎"])
+@app.get("/api/v1/status", response_model=schemas.ServiceStatus, tags=[models.TagsEnum.public])
 async def status():
     status = schemas.ServiceStatus()
 
@@ -141,3 +126,22 @@ async def status():
         status.database = schemas.Status.DOWN
 
     return status
+
+@app.post("/api/v1/providers", response_model=schemas.APIKey, tags=[models.TagsEnum.apiKeyMaster])
+async def create_provider(
+    provider: schemas.Provider, key: APIKey = Depends(validate_master_key)
+):
+    key = await models.Provider.create_new_key(db, provider.provider)
+    return schemas.APIKey(key=key)
+
+
+@app.get("/api/v1/providers", tags=[models.TagsEnum.apiKeyMaster])
+async def list_providers(key: APIKey = Depends(validate_master_key)):
+    return [
+        schemas.Provider.from_orm(s) for s in await models.Provider.get_providers(db)
+    ]
+
+
+@app.delete("/api/v1/providers/{provider}", tags=[models.TagsEnum.apiKeyMaster])
+async def delete_provider(provider: str, key: APIKey = Depends(validate_master_key)):
+    return await models.Provider.revoke_all_keys(db, provider)

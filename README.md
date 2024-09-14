@@ -39,7 +39,7 @@ curl --request GET \
   --header 'X-API-Key: YOUR_MADE_UP_AND_SECURE_API_KEY'
 ```
 
-At first should return a http status 200 with an empty array `[]`
+At first should return a http status 200 with an empty array `[]`.
 
 # Disclaimer
 

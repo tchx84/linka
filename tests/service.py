@@ -43,7 +43,7 @@ measurements = [
         "co2": 1000.0,
         "longitude": -57.521369,
         "latitude": -25.194156,
-        "recorded": "2020-10-24T20:47:57.370721Z",
+        "recorded": "2020-10-24T20:49:57.370721Z",
     },
     {
         "sensor": "nullable",
@@ -59,7 +59,7 @@ measurements = [
         "co2": None,
         "longitude": -57.521369,
         "latitude": -25.194156,
-        "recorded": "2020-10-24T20:47:57.370721Z",
+        "recorded": "2020-10-24T20:48:57.370721Z",
     },
     {
         "sensor": "test",
@@ -299,6 +299,38 @@ def test_status(client):
     assert response.json() == status
 
 
+@pytest.mark.dependency(depends=["test_record"])
+def test_query_sort_recorded_ascending(client):
+    query = {
+        "start": "1984-04-24T00:00:00",
+        "sort": "recorded",
+    }
+
+    response = client.get(f"/api/v1/measurements?{urlencode(query)}")
+    assert response.status_code == 200
+    assert response.json() == [
+        measurements[2],
+        measurements[1],
+        measurements[0],
+    ]
+
+
+@pytest.mark.dependency(depends=["test_record"])
+def test_query_sort_recorded_descending(client):
+    query = {
+        "start": "1984-04-24T00:00:00",
+        "sort": "-recorded",
+    }
+
+    response = client.get(f"/api/v1/measurements?{urlencode(query)}")
+    assert response.status_code == 200
+    assert response.json() == [
+        measurements[0],
+        measurements[1],
+        measurements[2],
+    ]
+
+
 @pytest.mark.dependency(
     depends=[
         "test_query",
@@ -306,6 +338,8 @@ def test_status(client):
         "test_distance_query",
         "test_aqi",
         "test_stats",
+        "test_query_sort_recorded_ascending",
+        "test_query_sort_recorded_descending",
     ]
 )
 def test_delete_provider(client):

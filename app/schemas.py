@@ -159,6 +159,12 @@ class QueryParams:
         title="Distance",
         description="Include measurements that are this kilometers far from the target",
     )
+    sort: Optional[str] = Query(
+        None,
+        title="Sort",
+        description="Sort measurements by recorded time. Use '-recorded' for descending order",
+        regex="^-?recorded$",
+    )
 
     @validator("start")
     def only_recent(cls, v):

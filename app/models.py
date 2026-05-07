@@ -77,7 +77,10 @@ class Measurement:
             return Measurement.default_order()
 
         if sort == "-recorded":
-            return [sqlalchemy.desc(measurements.c.recorded), *Measurement.default_order()]
+            return [
+                sqlalchemy.desc(measurements.c.recorded),
+                *Measurement.default_order(),
+            ]
 
         return [sqlalchemy.asc(measurements.c.recorded), *Measurement.default_order()]
 

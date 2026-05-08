@@ -253,13 +253,13 @@ def test_enforce_utc():
     original = measurements[0]
 
     future = copy.deepcopy(original)
-    future["recorded"] = "2020-10-24T21:47:57.370721+01:00"
+    future["recorded"] = "2020-10-24T21:49:57.370721+01:00"
 
     present = copy.deepcopy(original)
-    present["recorded"] = "2020-10-24T20:47:57.370721"
+    present["recorded"] = "2020-10-24T20:49:57.370721"
 
     past = copy.deepcopy(original)
-    past["recorded"] = "2020-10-24T19:47:57.370721-01:00"
+    past["recorded"] = "2020-10-24T19:49:57.370721-01:00"
 
     from app.schemas import Measurement
 

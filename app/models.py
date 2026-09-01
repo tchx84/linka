@@ -64,6 +64,27 @@ providers = sqlalchemy.Table(
 
 class Measurement:
     @staticmethod
+    def default_order():
+        return [
+            sqlalchemy.asc(measurements.c.description).nulls_last(),
+            sqlalchemy.asc(measurements.c.source),
+            sqlalchemy.asc(measurements.c.sensor),
+        ]
+
+    @staticmethod
+    def sort_order(sort):
+        if sort is None:
+            return Measurement.default_order()
+
+        if sort == "-recorded":
+            return [
+                sqlalchemy.desc(measurements.c.recorded),
+                *Measurement.default_order(),
+            ]
+
+        return [sqlalchemy.asc(measurements.c.recorded), *Measurement.default_order()]
+
+    @staticmethod
     async def store(db, measurements_):
         insert = measurements.insert()
         await db.execute_many(insert, measurements_)
@@ -135,7 +156,7 @@ class Measurement:
             measurements.c.latitude,
             measurements.c.longitude,
         )
-        select = select.order_by(sqlalchemy.asc(measurements.c.description))
+        select = select.order_by(*Measurement.default_order())
         select = Measurement.filter(select, query)
 
         return await db.fetch_all(select)
@@ -143,7 +164,7 @@ class Measurement:
     @staticmethod
     async def retrieve(db, query):
         select = measurements.select()
-        select = select.order_by(sqlalchemy.asc(measurements.c.description))
+        select = select.order_by(*Measurement.sort_order(query.sort))
         select = Measurement.filter(select, query)
 
         return await db.fetch_all(select)

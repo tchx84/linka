@@ -223,13 +223,13 @@ class Report(BaseModel):
         title="Description",
         description="User friendly name to identify the device",
     )
-    longitude: float = Query(
-        None,
+    longitude: float = Field(
+        ...,
         title="Longitude",
         description="Target longitude coordinate",
     )
-    latitude: float = Query(
-        None,
+    latitude: float = Field(
+        ...,
         title="Latitude",
         description="Target latitude coordinate",
     )
@@ -262,13 +262,13 @@ class ReportStats(BaseModel):
         title="Description",
         description="User friendly name to identify the device",
     )
-    longitude: float = Query(
-        None,
+    longitude: float = Field(
+        ...,
         title="Longitude",
         description="Target longitude coordinate",
     )
-    latitude: float = Query(
-        None,
+    latitude: float = Field(
+        ...,
         title="Latitude",
         description="Target latitude coordinate",
     )

@@ -179,16 +179,33 @@ class Provider:
     @staticmethod
     async def revoke_key(db: Database, provider: str, raw_api_key: str) -> bool:
         api_key_hash = hashlib.sha256(raw_api_key.encode("utf-8")).hexdigest()
-        delete = providers.delete()
-        query = delete.where(providers.c.provider == provider)
-        query = query.where(providers.c.api_key_hash == api_key_hash)
-        return await db.execute(query)
+        provider_ids = sqlalchemy.select(providers.c.id)
+        provider_ids = provider_ids.where(providers.c.provider == provider)
+        provider_ids = provider_ids.where(providers.c.api_key_hash == api_key_hash)
+
+        async with db.transaction():
+            query = measurements.delete().where(
+                measurements.c.provider_id.in_(provider_ids)
+            )
+            await db.execute(query)
+
+            query = providers.delete().where(providers.c.id.in_(provider_ids))
+            return await db.execute(query)
 
     @staticmethod
     async def revoke_all_keys(db: Database, provider: str) -> bool:
-        delete = providers.delete()
-        query = delete.where(providers.c.provider == provider)
-        return await db.execute(query)
+        provider_ids = sqlalchemy.select(providers.c.id).where(
+            providers.c.provider == provider
+        )
+
+        async with db.transaction():
+            query = measurements.delete().where(
+                measurements.c.provider_id.in_(provider_ids)
+            )
+            await db.execute(query)
+
+            query = providers.delete().where(providers.c.id.in_(provider_ids))
+            return await db.execute(query)
 
     @staticmethod
     async def get_all_keys(db: Database) -> Set[str]:

@@ -1,4 +1,4 @@
-fastapi==0.114.1
+fastapi==0.124.4
 httpx==0.23.3
 uvicorn==0.21.0
 gunicorn==20.1.0
@@ -14,4 +14,4 @@ psycopg2-binary==2.9.9
 alembic==1.10.2
 geopy==2.3.0
 pytest-dependency==0.5.1
-pydantic==2.9.1
+pydantic==2.10.6

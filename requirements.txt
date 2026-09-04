@@ -1,5 +1,5 @@
 fastapi==0.124.4
-httpx==0.23.3
+httpx==0.28.1
 uvicorn==0.33.0
 gunicorn==23.0.0
 requests==2.31.0

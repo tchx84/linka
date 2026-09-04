@@ -2,7 +2,7 @@ fastapi==0.124.4
 httpx==0.28.1
 uvicorn==0.33.0
 gunicorn==23.0.0
-requests==2.31.0
+requests==2.32.4
 pytest==7.2.2
 pyflakes==3.0.1
 black==23.1.0
@@ -12,6 +12,6 @@ SQLAlchemy==1.4.46
 asyncpg==0.29.0
 psycopg2-binary==2.9.9
 alembic==1.10.2
-geopy==2.3.0
+geopy==2.5.0
 pytest-dependency==0.5.1
 pydantic==2.10.6

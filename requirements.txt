@@ -7,8 +7,8 @@ pytest==7.2.2
 pyflakes==3.0.1
 black==23.1.0
 aiosqlite==0.18.0
-databases==0.7.0
-SQLAlchemy==1.4.46
+databases==0.9.0
+SQLAlchemy==2.0.52
 asyncpg==0.29.0
 psycopg2-binary==2.9.9
 alembic==1.10.2

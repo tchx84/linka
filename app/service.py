@@ -54,7 +54,8 @@ async def create_provider(
 @app.get("/api/v1/providers")
 async def list_providers(key: APIKey = Depends(validate_master_key)):
     return [
-        schemas.Provider.from_orm(s) for s in await models.Provider.get_providers(db)
+        schemas.Provider.model_validate(s)
+        for s in await models.Provider.get_providers(db)
     ]
 
 
@@ -73,7 +74,7 @@ async def post(
 @app.get("/api/v1/measurements", response_model=List[schemas.Measurement])
 async def get(query: schemas.QueryParams = Depends(schemas.QueryParams)):
     return [
-        schemas.Measurement.from_orm(m)
+        schemas.Measurement.model_validate(m)
         for m in await models.Measurement.retrieve(db, query)
     ]
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 pyflakes app tests tools && \
 black --check app tests tools && \

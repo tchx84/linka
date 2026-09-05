@@ -15,13 +15,15 @@
 
 from datetime import datetime, timezone, timedelta
 from enum import Enum
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pydantic.dataclasses import dataclass
 from typing import Optional, Union
 from fastapi import Query
 
 
 class Measurement(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     sensor: str = Field(
         ...,
         title="Sensor",
@@ -111,7 +113,7 @@ class Measurement(BaseModel):
         description="Date and time for when these values were measured",
     )
 
-    @validator("recorded")
+    @field_validator("recorded")
     def must_be_utc(cls, v):
         v = v if v.tzinfo else v.replace(tzinfo=timezone.utc)
         v = datetime.utcfromtimestamp(v.timestamp())
@@ -119,12 +121,9 @@ class Measurement(BaseModel):
         return v
 
     def to_orm(self, provider):
-        _dict = self.dict()
+        _dict = self.model_dump()
         _dict["provider_id"] = provider
         return _dict
-
-    class Config:
-        from_attributes = True
 
 
 @dataclass
@@ -160,21 +159,20 @@ class QueryParams:
         description="Include measurements that are this kilometers far from the target",
     )
 
-    @validator("start")
+    @field_validator("start")
     def only_recent(cls, v):
         v = v if v else datetime.now(timezone.utc) - timedelta(minutes=5)
         return v
 
 
 class Provider(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     provider: str = Field(
         ...,
         title="Provider",
         description="Name used to identify the measurements provider",
     )
-
-    class Config:
-        from_attributes = True
 
 
 class APIKey(BaseModel):
@@ -223,13 +221,13 @@ class Report(BaseModel):
         title="Description",
         description="User friendly name to identify the device",
     )
-    longitude: float = Query(
-        None,
+    longitude: float = Field(
+        ...,
         title="Longitude",
         description="Target longitude coordinate",
     )
-    latitude: float = Query(
-        None,
+    latitude: float = Field(
+        ...,
         title="Latitude",
         description="Target latitude coordinate",
     )
@@ -262,13 +260,13 @@ class ReportStats(BaseModel):
         title="Description",
         description="User friendly name to identify the device",
     )
-    longitude: float = Query(
-        None,
+    longitude: float = Field(
+        ...,
         title="Longitude",
         description="Target longitude coordinate",
     )
-    latitude: float = Query(
-        None,
+    latitude: float = Field(
+        ...,
         title="Latitude",
         description="Target latitude coordinate",
     )
